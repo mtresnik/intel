@@ -45,7 +45,15 @@ class TestGenetic {
 
     @Test
     fun testGeneticString(){
-        val testString = "Hello!"
+        testGeneticString("Hello!")
+    }
+
+    @Test
+    fun testGeneticString2(){
+        testGeneticString("Goodbye!", 5000)
+    }
+
+    fun testGeneticString(testString: String, numEpochs : Int = 500){
         val fitnessFunction = object : GeneticFitnessFunction<Char> {
             override fun evaluateFitness(individual: Chromosome<Char>): Double {
                 val chars = individual.values.map { gene -> gene.value }
@@ -58,7 +66,7 @@ class TestGenetic {
             populationSize = 100,
             fitnessFunction = fitnessFunction,
             geneFactory = geneFactory)
-        geneticAlgorithm.trainEpoch(500)
+        geneticAlgorithm.trainEpoch(numEpochs)
         Thread.sleep(10000)
     }
 

@@ -2,7 +2,8 @@ package com.resnik.intel.kd
 
 import com.resnik.math.linear.array.ArrayPoint
 
-class KDTree<T>(val dim : Int) {
+// TODO : Add kNN to this by finding closest node, going up tree to parent / nephews
+class KDTree<T>(private val dim : Int) {
 
     var root : KDTreeNode<T>? = null
 
@@ -18,6 +19,7 @@ class KDTree<T>(val dim : Int) {
         if(current == null){
             return KDTreeNode(value)
         }
+        // Find location same way as lookup.
         if(value.point[currDim] < current.value.point[currDim]){
             current.left = insert(value, current.left, (currDim + 1) % dim)
             current.left!!.parent = current
@@ -28,7 +30,7 @@ class KDTree<T>(val dim : Int) {
         return current
     }
 
-    operator fun get(point: ArrayPoint) : KDTreeNode<T>? = get(point, root, 0);
+    operator fun get(point: ArrayPoint) : KDTreeNode<T>? = get(point, root, 0)
 
     fun get(point: ArrayPoint, current : KDTreeNode<T>?, currDim : Int) : KDTreeNode<T>? {
         if(current == null || root == null){
@@ -38,7 +40,9 @@ class KDTree<T>(val dim : Int) {
             return root
         }
         var temp : KDTreeNode<T>? = null
+        // Change dim comparing to at each step.
         if(point[currDim] < current.value.point[currDim]){
+            // Keep going in a "less" direction
             temp = get(point, current.left, (currDim + 1) % dim)
             if (temp == null) {
                 return if (current.left == null) {
@@ -47,6 +51,7 @@ class KDTree<T>(val dim : Int) {
             }
             return temp
         } else {
+            // Keep going in a "greater / equal" direction
             temp = get(point, current.right, (currDim + 1) % dim)
             if (temp == null) {
                 return if (current.right == null) {

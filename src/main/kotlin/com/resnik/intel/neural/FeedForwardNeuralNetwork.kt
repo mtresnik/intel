@@ -80,8 +80,7 @@ class FeedForwardNeuralNetwork : Model {
         weights.indices.forEach { index -> layers[index + 1].setFrom(
                 (((weights[index] * layers[index].toColMatrix()) + biases[index + 1])
                         .apply(transferFunction::activate))
-                        .columnVectors()[0]
-        )
+                        .columnVectors()[0])
         }
         return outputLayer
     }

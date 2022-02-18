@@ -55,7 +55,6 @@ class TestQuadtree {
         val icon = ImageIcon(output)
         val label = JLabel(icon)
         JOptionPane.showMessageDialog(null, label)
-
     }
 
 }

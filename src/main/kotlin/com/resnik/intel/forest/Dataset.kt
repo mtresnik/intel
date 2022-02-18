@@ -79,7 +79,7 @@ class Dataset(val schema: Schema, val targetAttribute: Attribute<*>) : ArrayList
 
     fun filter(attribute: Attribute<*>, value: Any) : List<Entry> = this.filter { entry -> entry[attribute] == value }
 
-    fun getHighestGainAttribute() : Map.Entry<Attribute<*>, Double>? = getAllInformationGain().entries.maxBy { entry -> entry.value }
+    fun getHighestGainAttribute() : Map.Entry<Attribute<*>, Double>? = getAllInformationGain().entries.maxByOrNull { entry -> entry.value }
 
     fun count(attribute: Attribute<*>, value : Any) : Int = this.count { entry -> entry[attribute] == value }
 

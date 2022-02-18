@@ -28,7 +28,7 @@ class KMeans(val seedPoints: Collection<ArrayPoint>) : Comparable<KMeans> {
         return clusterIndices.map { allClusters[it] }
     }
 
-    fun getClusterIndex(point: ArrayPoint) : Int = allClusters.indices.minBy { index -> allClusters[index].distanceTo(point) }!!
+    fun getClusterIndex(point: ArrayPoint) : Int = allClusters.indices.minByOrNull { index -> allClusters[index].distanceTo(point) }!!
 
     fun getCluster(point: ArrayPoint) : Cluster = allClusters[getClusterIndex(point)]
 

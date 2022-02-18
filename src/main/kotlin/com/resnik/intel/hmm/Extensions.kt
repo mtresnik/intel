@@ -19,7 +19,7 @@ import kotlin.math.ln
 fun DoubleArray.logsumexp() : Double {
     if(this.isEmpty())
         return 0.0
-    val max = this.max() ?: this.first()
+    val max = this.maxOrNull() ?: this.first()
     /*
     * Needed for possible NaN values, where xi = inf and x* = inf then inf - inf = NaN
     * */

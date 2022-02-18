@@ -123,7 +123,7 @@ class TestKDTree {
             println("Row: $row / ${input.height}")
             repeat(input.width){col ->
                 val curr = ArrayPoint(row.toDouble(), col.toDouble())
-                val next = seedPointList.minBy { t -> t.first.distanceTo(curr) }!!
+                val next = seedPointList.minByOrNull { t -> t.first.distanceTo(curr) }!!
                 val color = next.second
                 output.setRGB(col, row, color.rgb)
             }
@@ -141,5 +141,66 @@ class TestKDTree {
         graphics2D.dispose()
         return resizedImage
     }
+
+    @Test
+    fun testNearestNeighbor() {
+        val N = 100
+        val valueList = mutableListOf<KDTreeValue<Double>>()
+        repeat(N){
+            valueList.add(KDTreeValue(
+                ArrayPoint(
+                    Math.random(),
+                    Math.random()
+                ), Math.random()))
+        }
+        val pointList = valueList.map { it.point }
+        val kdTree = KDTree<Double>(2)
+        valueList.forEach { kdTree + it }
+        println("Inserted $N points into the kdTree")
+
+        val M = 100
+        val lookupPoints = mutableListOf<ArrayPoint>()
+        repeat(M){lookupPoints.add(
+            ArrayPoint(
+                Math.random(),
+                Math.random()
+            )
+        ) }
+
+        val k = 10
+        println("Starting kNN Search for k=$k and M=$M")
+        val kNNStart = System.currentTimeMillis()
+        val kdClosestMap = mutableMapOf<ArrayPoint, List<ArrayPoint>>()
+        repeat(M) { index ->
+            val currPoint = lookupPoints[index]
+            kdClosestMap[currPoint] = kdTree.knn(currPoint, k).map { it.value.point }
+        }
+        var dt = System.currentTimeMillis() - kNNStart
+        println("Finished kNN Search in dt=$dt")
+
+        println("Starting novel kNN search using sorting algorithms.")
+        val novelStart = System.currentTimeMillis()
+        val actualMap = mutableMapOf<ArrayPoint, List<ArrayPoint>>()
+        repeat(M) { index ->
+            val currPoint = lookupPoints[index]
+            actualMap[currPoint] = pointList.sortedBy { it.distanceTo(currPoint) }.take(k)
+        }
+        dt = System.currentTimeMillis() - novelStart
+        println("Finished novel kNN search in dt=$dt")
+
+        // Find percentage correct
+        var numCorrect = 0
+
+        repeat(M) { index ->
+            val currPoint = lookupPoints[index]
+            if(kdTree.get(currPoint)!!.value.point == actualMap[currPoint]!!.first()) {
+                numCorrect++
+            }
+            // println("kdList= $kdList \t actualList= $actualList")
+        }
+        val percentCorrect = numCorrect.toDouble() / M
+        println("Percentage correct= ${percentCorrect * 100}")
+    }
+
 
 }

@@ -149,17 +149,17 @@ class HMM<STATE, OBSERVATION>(
                 // Viterbi matrix max for timestep
                 viterbiMatrix[i][j] = states.indices
                     .map { k -> viterbiMatrix[k][j-1] + logTransitions[k][i] + logEmissions[i][obsIndex] }
-                    .max() ?: throw IllegalStateException()
+                    .maxOrNull() ?: throw IllegalStateException()
                 // Argmax stored in backpointer matrix
                 backpointerMatrix[i][j] = states.indices
-                    .maxBy { k -> viterbiMatrix[k][j-1] + logTransitions[k][i] + logEmissions[i][obsIndex] }
+                    .maxByOrNull { k -> viterbiMatrix[k][j-1] + logTransitions[k][i] + logEmissions[i][obsIndex] }
                     ?: throw IllegalStateException()
             }
         }
         // pointers and path are populated by best state for observation index
         val bestPathPointers = IntArray(observationSequence.size)
         val bestPath = MutableList<STATE?>(observationSequence.size){null}
-        bestPathPointers[bestPathPointers.lastIndex] = states.indices.maxBy { k -> viterbiMatrix[k].last() } ?: throw IllegalStateException()
+        bestPathPointers[bestPathPointers.lastIndex] = states.indices.maxByOrNull { k -> viterbiMatrix[k].last() } ?: throw IllegalStateException()
         bestPath[bestPath.lastIndex] = states[bestPathPointers.last()]
         (observationSequence.lastIndex downTo   1).forEach { j ->
             bestPathPointers[j - 1] = backpointerMatrix[bestPathPointers[j]][j]

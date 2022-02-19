@@ -93,7 +93,8 @@ val clusterVariance = closestCluster.getVariance()
 
 For image compression, your number of means is the number of unique colors you want. As k increases, from 8 to 16, 32, 64, etc, the quality of the image increases. Similarly, the number of seed points needed from the original image may increase when k is small to preserve information content.
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/4C_0dY91V1U" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+Video: </br>
+[![K-Means Image Compression](https://img.youtube.com/vi/4C_0dY91V1U/0.jpg)](https://www.youtube.com/watch?v=4C_0dY91V1U)
 
 ## Proof of Concept Work
 

@@ -40,23 +40,9 @@ Constraints are used to limit the search space given the initial variables and d
 
 #### Worst Case Complexity (No Solutions, No Constraints):
 
-<img src="https://latex.codecogs.com/svg.image?S&space;=&space;\sum&space;_{i=1}^{|V|}|D|^{i}&space;" title="S = \sum _{i=1}^{|V|}|D|^{i} " />
-
-<br/>
-<br/>
-
-<img src="https://latex.codecogs.com/svg.image?S&space;*&space;|D|&space;=&space;\sum&space;_{i=2}^{|V|&space;&plus;&space;1}|D|^{i}&space;" title="S * |D| = \sum _{i=2}^{|V| + 1}|D|^{i} " />
-
-<br/>
-<br/>
-
-<img src="https://latex.codecogs.com/svg.image?\Rightarrow&space;S&space;*&space;(|D|&space;-&space;1)&space;=&space;D^{|V|&space;&plus;&space;1}&space;-&space;D^1" title="\Rightarrow S * (|D| - 1) = D^{|V| + 1} - D^1" />
-
-<br/>
-<br/>
-
-<img src="https://latex.codecogs.com/svg.image?\Rightarrow&space;O&space;\left&space;(&space;\frac{&space;|D|^{|V|&space;&plus;&space;1}&space;}{&space;|D|&space;-&space;1&space;}&space;\right&space;)" title="\Rightarrow O \left ( \frac{ |D|^{|V| + 1} }{ |D| - 1 } \right )" />
-
+`// Had to change the background on this one for dark-mode legibility`
+</br>
+<img src="https://i.imgur.com/i7BBTz4.png" width="300">
 
 ### Examples
 
@@ -76,7 +62,7 @@ Constraints are used to limit the search space given the initial variables and d
 
 Speed Limit Sign (quad tree, distance threshold = 40 / 255.0) </br>
 <img src="https://i.imgur.com/HgdFG3b.png" width="300"> </br>
-Sunday in the Park With George (k-d tree, uniform random seeds = 1000)
+Sunday in the Park With George (k-d tree, uniform random seeds = 1000) </br>
 <img src="https://i.imgur.com/oK2I3az.png" width="300">
 
 ## K-Means Clustering

@@ -117,12 +117,12 @@ More Tensor iteration work is needed before these are *fully fleshed out.
 Example of decision trees on the Tennis Dataset but generalized for other Attribute types.
 
 #### Tennis Dataset
-Attributes = (Outlook, Temperature, Humidity, Wind, PlayTennis)
-Outlook = (Sunny, Overcast, Rain)
-Temperature = (Hot, Mild, Cool)
-Humidity = (High, Normal)
-Wind = (Weak, Strong)
-PlayTennis = (No, Yes)
+Attributes = (Outlook, Temperature, Humidity, Wind, PlayTennis) </br>
+Outlook = (Sunny, Overcast, Rain) </br>
+Temperature = (Hot, Mild, Cool) </br>
+Humidity = (High, Normal) </br>
+Wind = (Weak, Strong) </br>
+PlayTennis = (No, Yes) </br>
 
 ```kotlin 
 val schema = Schema(outlook, temperature, humidity, wind, tennis)

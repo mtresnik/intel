@@ -127,7 +127,7 @@ PlayTennis = (No, Yes)
 ```kotlin 
 val schema = Schema(outlook, temperature, humidity, wind, tennis)
 val dataset = Dataset(schema, tennis) // schema, target
-dataset.addEntry(Entry(schema, sunny, hot, high, weak, no))~~~~
+dataset.addEntry(Entry(schema, sunny, hot, high, weak, no))
 // ...
 // Add other Entries
 // ...

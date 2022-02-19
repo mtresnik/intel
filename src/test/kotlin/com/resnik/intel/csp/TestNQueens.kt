@@ -182,7 +182,7 @@ class TestNQueens {
 
     @Test
     fun testNQueensInferredAsync() {
-        val n = 13
+        val n = 8
         val start = System.currentTimeMillis()
         val cols = (1..n).toList()
         val rows = mutableMapOf<Int, List<Int>>()
@@ -200,7 +200,7 @@ class TestNQueens {
 
     @Test
     fun testNQueensDomainCoroutinePreprocess() {
-        val n = 13
+        val n = 14
         val cols = (1..n).toList()
         val rows = mutableMapOf<Int, List<Int>>()
         (1 .. n).forEach{rows[it] = (1..n).toList()}

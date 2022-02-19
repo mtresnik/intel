@@ -1,9 +1,7 @@
 package com.resnik.intel.csp
 
 import com.resnik.intel.csp.constraint.local.IntSumConstraint
-import com.resnik.intel.csp.constraint.local.LocalSumConstraint
 import com.resnik.intel.csp.tree.async.CSPCoroutine
-import mappedTo
 import org.junit.Test
 
 class TestSum {

@@ -2,7 +2,9 @@ package com.resnik.intel.neural.conv
 
 import com.resnik.math.linear.array.ArrayDimension
 import com.resnik.math.linear.array.ArrayTensor
+import com.resnik.math.linear.array.ArrayTensorCoordIterator
 import com.resnik.math.product
+import java.lang.IllegalArgumentException
 import java.util.*
 import kotlin.math.sqrt
 
@@ -25,7 +27,16 @@ class ConnectedLayer(val outputLength : Int, val inputDimSizes : IntArray) : Ten
         while(regionIterator.hasNext()){
             val region = regionIterator.next()
             println("Region Dim: ${region.dim} \t Weight Dim: ${weights.dim} \t Input Dim: ${input.dim}")
-            recentOutput.values[regionIterator.numTraversed()] = region.innerProduct(input)
+            val valueIndex = regionIterator.numTraversed()
+            try {
+                recentOutput.values[valueIndex] = region.innerProduct(input)
+            } catch (ex : IllegalArgumentException) {
+                if(region.dim.stripLast() == input.dim) {
+                    println("Same up to last dim")
+                    val tempTensor = ArrayTensor(region.dim.stripLast()){ index -> region.values[index]}
+                    recentOutput.values[valueIndex] = tempTensor.innerProduct(input)
+                }
+            }
         }
         recentOutput += biases
         return recentOutput.clone()

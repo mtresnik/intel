@@ -1,9 +1,7 @@
 package com.resnik.intel.csp
 
 import com.resnik.intel.csp.constraint.global.GlobalAllDiff
-import com.resnik.intel.csp.constraint.local.LocalAllDiff
 import com.resnik.intel.csp.tree.CSPTree
-import mappedTo
 import org.junit.Test
 
 class TestAllDiff {

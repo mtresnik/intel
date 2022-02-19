@@ -34,12 +34,12 @@ class LSTM(inputSize : Int, val outputSize: Int, val learningRate: Double) {
     var derivativePrimeHiddenState = ArrayVector(outputSize, 0.0)
 
     fun forward() {
-        forget = (this.forgetState * this.inputLayer.toColMatrix()).apply { sigmoid.activate(it) }.toVector()!!
+        forget = (this.forgetState.transpose() * this.inputLayer.toColMatrix()).apply { sigmoid.activate(it) }.toVector()!!
         cellState = cellState.hadamard(forget)
-        input = (this.inputGate * this.inputLayer.toColMatrix()).apply { sigmoid.activate(it) }.toVector()!!
-        cell = (this.cellStateMat * this.inputLayer.toColMatrix()).apply { tanh.activate(it) }.toVector()!!
+        input = (this.inputGate.transpose() * this.inputLayer.toColMatrix()).apply { sigmoid.activate(it) }.toVector()!!
+        cell = (this.cellStateMat.transpose() * this.inputLayer.toColMatrix()).apply { tanh.activate(it) }.toVector()!!
         this.cellState = input.hadamard(cell)
-        output = (this.outputGate * this.inputLayer.toColMatrix()).apply { sigmoid.activate(it) }.toVector()!!
+        output = (this.outputGate.transpose() * this.inputLayer.toColMatrix()).apply { sigmoid.activate(it) }.toVector()!!
         this.outputLayer = output.hadamard(cellState.apply { tanh.activate(it) })
     }
 

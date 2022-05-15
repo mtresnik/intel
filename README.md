@@ -1,5 +1,105 @@
 # intel
 
+[![build status](https://github.com/mtresnik/intel/actions/workflows/gradle.yml/badge.svg)](https://github.com/mtresnik/intel/actions/workflows/gradle.yml/)
+[![version](https://img.shields.io/badge/version-1.0.0-blue)]()
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://github.com/mtresnik/intel/blob/main/LICENSE)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-green.svg?style=flat-square)](https://makeapullrequest.com)
+<hr>
+
+## Dependencies
+> Please compile against [com.resnik.math:1.0.0](https://github.com/mtresnik/math/packages/1409888) as well as this project.
+
+## Getting Started
+
+> This is a slightly different process to that of [com.resnik.math](https://github.com/mtresnik/math/).
+
+**~/.m2/settings.xml:**
+```xml
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0
+                      http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    ...
+  <activeProfiles>
+    <activeProfile>github</activeProfile>
+  </activeProfiles>
+    ...
+  <servers>
+    <server>
+      <id>github</id>
+      <username>GITHUB_USERNAME</username>
+      <password>GITHUB_PAT</password>
+    </server>
+  </servers>
+</settings>
+```
+
+**pom.xml:**
+```xml
+<repository>
+    <id>github</id>
+    <url>https://maven.pkg.github.com/mtresnik/math</url>
+    <snapshots>
+        <enabled>true</enabled>
+    </snapshots>
+</repository>
+...
+<dependency>
+    <groupId>com.resnik</groupId>
+    <artifactId>math</artifactId>
+    <version>1.0.0</version>
+</dependency>
+
+<dependency>
+    <groupId>com.resnik</groupId>
+    <artifactId>intel</artifactId>
+    <version>1.0.0</version>
+</dependency>
+```
+
+### Gradle (groovy)
+
+**~/.gradle/gradle.properties:**
+```groovy
+gpr.user=GITHUB_USERNAME
+gpr.token=GITHUB_PAT
+```
+
+**build.gradle:**
+```groovy
+repositories {
+    ...
+    maven {
+        name="GitHubPackages"
+        url= uri("https://maven.pkg.github.com/mtresnik/math")
+        credentials {
+            // Runner stored in env, else stored in ~/.gradle/gradle.properties
+            username = System.getenv("USERNAME") ?: findProperty("gpr.user") ?: "<GITHUB_USERNAME>"
+            password = System.getenv("TOKEN") ?: findProperty("gpr.token")
+        }
+    }
+    ...
+    maven {
+        name="GitHubPackages"
+        url= uri("https://maven.pkg.github.com/mtresnik/intel")
+        credentials {
+            // Runner stored in env, else stored in ~/.gradle/gradle.properties
+            username = System.getenv("USERNAME") ?: findProperty("gpr.user") ?: "<GITHUB_USERNAME>"
+            password = System.getenv("TOKEN") ?: findProperty("gpr.token")
+        }
+    }
+}
+
+dependencies {
+    ...
+    implementation group: 'com.resnik', name: 'math', version: '1.0.0'
+    implementation group: 'com.resnik', name: 'intel', version: '1.0.0'
+    ...
+}
+```
+
+<hr>
+
 ## Constraint Satisfaction Problems (CSP's)
 
 Finding solutions to smaller CSP's is simple enough using recursion, but harder for larger / more complex domains. For larger domains we run into the `StackOverflowException` and `Java OEM Exception` since the solutionset is stored at each point on the stack in a recursion model.

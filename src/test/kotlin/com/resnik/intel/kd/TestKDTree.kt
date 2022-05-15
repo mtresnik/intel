@@ -1,6 +1,8 @@
 package com.resnik.intel.kd
 
+import com.resnik.intel.TestRenderDelegate
 import com.resnik.math.linear.array.ArrayPoint
+import org.junit.Ignore
 import org.junit.Test
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -12,7 +14,7 @@ import javax.swing.JLabel
 import javax.swing.JOptionPane
 
 
-class TestKDTree {
+class TestKDTree : TestRenderDelegate() {
 
     @Test
     fun testKD1(){
@@ -47,8 +49,10 @@ class TestKDTree {
         println("Lookup Time (ms): $lookupTime")
     }
 
+    @Ignore
     @Test
     fun testKDImage(){
+        if (!RENDER) return
         val url = URL("https://www.destinationmansfield.com/wp-content/uploads/2018/06/A_Sunday_on_La_Grande_Jatte_Georges_Seurat_1884-600x403.png")
         val input: BufferedImage = ImageIO.read(url)
         val kdTree: KDTree<Color> = KDTree(2)
@@ -100,8 +104,10 @@ class TestKDTree {
         JOptionPane.showMessageDialog(null, label)
     }
 
+    @Ignore
     @Test
     fun testNext() {
+        if (!RENDER) return
         val url = URL("https://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg/1200px-Mona_Lisa%2C_by_Leonardo_da_Vinci%2C_from_C2RMF_retouched.jpg")
         val before: BufferedImage = ImageIO.read(url)
 

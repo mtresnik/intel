@@ -1,5 +1,6 @@
 package com.resnik.intel.svm
 
+import com.resnik.intel.TestRenderDelegate
 import com.resnik.math.linear.array.ArrayPoint
 import com.resnik.math.linear.array.ArrayVector
 import org.junit.Test
@@ -12,16 +13,16 @@ import javax.swing.JLabel
 import javax.swing.JOptionPane
 import kotlin.math.floor
 
-class TestSVM {
+class TestSVM : TestRenderDelegate() {
 
-    val minX = -5.0
-    val minY = -5.0
-    val maxX = 5.0
-    val maxY = 5.0
-    val width = 800
-    val height = width
+    private val minX = -5.0
+    private val minY = -5.0
+    private val maxX = 5.0
+    private val maxY = 5.0
+    private val width = 800
+    private val height = width
 
-    fun pointToCoord(pt: ArrayPoint) : Pair<Int, Int> {
+    private fun pointToCoord(pt: ArrayPoint) : Pair<Int, Int> {
         val x = pt.values[0]
         val y = pt.values[1]
         val relX = (x - minX) / (maxX - minX)
@@ -29,7 +30,7 @@ class TestSVM {
         return Pair(floor(relX*width).toInt(), floor(relY*height).toInt())
     }
 
-    fun drawLine(pt1: ArrayPoint, pt2: ArrayPoint, graphics2D: Graphics2D, paint: Color = Color.BLACK, stroke: Float = 1.0f){
+    private fun drawLine(pt1: ArrayPoint, pt2: ArrayPoint, graphics2D: Graphics2D, paint: Color = Color.BLACK, stroke: Float = 1.0f){
         graphics2D.paint = paint
         graphics2D.stroke = BasicStroke(stroke)
         val firstCoords = pointToCoord(pt1)
@@ -38,7 +39,7 @@ class TestSVM {
         graphics2D.drawLine(firstCoords.first,firstCoords.second, secondCoords.first, secondCoords.second)
     }
 
-    fun drawPoint(pt: ArrayPoint, graphics2D: Graphics2D, paint: Color = Color.BLACK){
+    private fun drawPoint(pt: ArrayPoint, graphics2D: Graphics2D, paint: Color = Color.BLACK){
         graphics2D.paint = paint
         val coords = pointToCoord(pt)
         graphics2D.fillOval(coords.first, coords.second, width/50, width/50)
@@ -84,7 +85,7 @@ class TestSVM {
             trainingOutputs.add(ArrayVector(-1.0))
         }
         val epochs = 10000
-        val svm : SVM = SVM(2, learningRate = 0.001, lambda = 1.0 / epochs)
+        val svm = SVM(2, learningRate = 0.001, lambda = 1.0 / epochs)
         svm.trainBatch(trainingInputs.toTypedArray(), trainingOutputs.toTypedArray(), epochs = epochs)
 
         // Main Boundary
@@ -103,29 +104,31 @@ class TestSVM {
         val xR2 : Double = (-1 + svm.b - svm.w[1]*minY) / (svm.w[0])
         val Rbottom = ArrayPoint(xR2, minY)
 
-        val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
-        val graphics: Graphics2D = image.createGraphics()
-        graphics.background = Color.WHITE
-        graphics.clearRect(0,0, width, height)
-        // draw axes
-        drawLine(
-            ArrayPoint(minX, 0.0),
-            ArrayPoint(maxX, 0.0), graphics)
-        drawLine(
-            ArrayPoint(0.0, minY),
-            ArrayPoint(0.0, maxY), graphics)
+        if (RENDER) {
+            val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
+            val graphics: Graphics2D = image.createGraphics()
+            graphics.background = Color.WHITE
+            graphics.clearRect(0,0, width, height)
+            // draw axes
+            drawLine(
+                ArrayPoint(minX, 0.0),
+                ArrayPoint(maxX, 0.0), graphics)
+            drawLine(
+                ArrayPoint(0.0, minY),
+                ArrayPoint(0.0, maxY), graphics)
 
-        firstData.forEach { drawPoint(it, graphics, firstDataColor) }
-        secondData.forEach { drawPoint(it, graphics, secondDataColor) }
+            firstData.forEach { drawPoint(it, graphics, firstDataColor) }
+            secondData.forEach { drawPoint(it, graphics, secondDataColor) }
 
-        drawLine(topPoint, bottomPoint, graphics, Color.ORANGE, 5.0f)
-        drawLine(Ltop, Lbottom, graphics, Color.BLUE, 3.0f)
-        drawLine(Rtop, Rbottom, graphics, Color.RED, 3.0f)
+            drawLine(topPoint, bottomPoint, graphics, Color.ORANGE, 5.0f)
+            drawLine(Ltop, Lbottom, graphics, Color.BLUE, 3.0f)
+            drawLine(Rtop, Rbottom, graphics, Color.RED, 3.0f)
 
-        graphics.dispose()
-        val icon = ImageIcon(image)
-        val label = JLabel(icon)
-        JOptionPane.showMessageDialog(null, label)
+            graphics.dispose()
+            val icon = ImageIcon(image)
+            val label = JLabel(icon)
+            JOptionPane.showMessageDialog(null, label)
+        }
     }
 
 }

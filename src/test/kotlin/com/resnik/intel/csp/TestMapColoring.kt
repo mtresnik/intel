@@ -1,5 +1,6 @@
 package com.resnik.intel.csp
 
+import com.resnik.intel.TestRenderDelegate
 import com.resnik.intel.csp.constraint.local.LocalConstraint
 import com.resnik.intel.csp.tree.CSPTree
 import com.resnik.intel.csp.tree.async.CSPCoroutine
@@ -13,7 +14,7 @@ import javax.swing.JLabel
 import javax.swing.JOptionPane
 
 
-class TestMapColoring {
+class TestMapColoring : TestRenderDelegate() {
 
     class MCC(private val from : String, private val to : String) : LocalConstraint<String, String>(listOf(from, to)){
 
@@ -25,23 +26,23 @@ class TestMapColoring {
 
     }
 
-    val WA = "Western Australia"
-    val NT = "Northern Territory"
-    val SA = "South Australia"
-    val Q  = "Queensland"
-    val NSW= "New South Wales"
-    val V  = "Victoria"
-    val T  = "Tasmania"
+    private val WA = "Western Australia"
+    private val NT = "Northern Territory"
+    private val SA = "South Australia"
+    private val Q  = "Queensland"
+    private val NSW= "New South Wales"
+    private val V  = "Victoria"
+    private val T  = "Tasmania"
 
-    val red     = "red"
-    val green   = "green"
-    val blue    = "blue"
+    private val red     = "red"
+    private val green   = "green"
+    private val blue    = "blue"
 
-    val colors = listOf(red, green, blue)
+    private val colors = listOf(red, green, blue)
 
-    val variables = listOf(WA, NT, SA, Q, NSW, V, T)
-    val domains = mutableMapOf<String, List<String>>()
-    val constraints = mutableListOf<MCC>()
+    private val variables = listOf(WA, NT, SA, Q, NSW, V, T)
+    private val domains = mutableMapOf<String, List<String>>()
+    private val constraints = mutableListOf<MCC>()
 
     init {
         variables.forEach { variable -> domains[variable] = colors }
@@ -157,9 +158,11 @@ class TestMapColoring {
                 index++
             }
         }
-        val icon = ImageIcon(image)
-        val label = JLabel(icon)
-        JOptionPane.showMessageDialog(null, label)
+        if (RENDER) {
+            val icon = ImageIcon(image)
+            val label = JLabel(icon)
+            JOptionPane.showMessageDialog(null, label)
+        }
     }
 
     @Test
@@ -232,9 +235,11 @@ class TestMapColoring {
             }
 
         }
-        val icon = ImageIcon(image)
-        val label = JLabel(icon)
-        JOptionPane.showMessageDialog(null, label)
+        if (RENDER) {
+            val icon = ImageIcon(image)
+            val label = JLabel(icon)
+            JOptionPane.showMessageDialog(null, label)
+        }
 
     }
 

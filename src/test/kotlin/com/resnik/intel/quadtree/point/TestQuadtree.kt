@@ -1,8 +1,10 @@
 package com.resnik.intel.quadtree.point
 
+import com.resnik.intel.TestRenderDelegate
 import com.resnik.intel.quadtree.image.ImageQuadTree
 import com.resnik.math.linear.array.ArrayPoint2d
 import com.resnik.math.linear.array.geometry.ShapeCollection
+import org.junit.Ignore
 import org.junit.Test
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -13,7 +15,7 @@ import javax.swing.ImageIcon
 import javax.swing.JLabel
 import javax.swing.JOptionPane
 
-class TestQuadtree {
+class TestQuadtree : TestRenderDelegate() {
 
     @Test
     fun testQuadTree1() {
@@ -30,15 +32,13 @@ class TestQuadtree {
         }
         val data = quadTree.collapseData()
         val shapeCollection = ShapeCollection(width = size + 1, height = size + 1, pointRadius = 4)
-        data.rects.forEach { rect ->
-            rect.toLines().forEach { line -> shapeCollection.addLine(line) }
-        }
         data.points.forEach { point ->
             shapeCollection.addPoint(point, Color.BLUE)
         }
-        shapeCollection.render()
+        if (RENDER) shapeCollection.render()
     }
 
+    @Ignore
     @Test
     fun testQuadTree2() {
         val url = URL("https://ssti.us/wp-content/uploads/sites/1303/2020/08/blog8.31speedlimit.jpg")
@@ -52,9 +52,11 @@ class TestQuadtree {
                 output.setRGB(col, row, rgb)
             }
         }
-        val icon = ImageIcon(output)
-        val label = JLabel(icon)
-        JOptionPane.showMessageDialog(null, label)
+        if (RENDER) {
+            val icon = ImageIcon(output)
+            val label = JLabel(icon)
+            JOptionPane.showMessageDialog(null, label)
+        }
     }
 
 }

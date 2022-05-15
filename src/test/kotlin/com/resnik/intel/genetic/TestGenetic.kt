@@ -1,6 +1,8 @@
 package com.resnik.intel.genetic
 
+import com.resnik.intel.TestRenderDelegate
 import com.resnik.math.linear.array.ArrayPoint
+import org.junit.Ignore
 import org.junit.Test
 import java.awt.BasicStroke
 import java.awt.Color
@@ -11,7 +13,8 @@ import javax.swing.JLabel
 import javax.swing.JOptionPane
 import kotlin.math.*
 
-class TestGenetic {
+@Ignore
+class TestGenetic : TestRenderDelegate() {
 
     val minX = -3.0
     val minY = -3.0
@@ -67,7 +70,6 @@ class TestGenetic {
             fitnessFunction = fitnessFunction,
             geneFactory = geneFactory)
         geneticAlgorithm.trainEpoch(numEpochs)
-        Thread.sleep(10000)
     }
 
     @Test
@@ -158,14 +160,14 @@ class TestGenetic {
             drawLine(firstPoint, secondPoint, graphics, Color.RED)
         }
 
-        drawPoint(minPoint, graphics, Color.BLUE)
+        if (RENDER) {
+            drawPoint(minPoint, graphics, Color.BLUE)
 
-        graphics.dispose()
-        val icon = ImageIcon(image)
-        val label = JLabel(icon)
-        JOptionPane.showMessageDialog(null, label)
-
-
+            graphics.dispose()
+            val icon = ImageIcon(image)
+            val label = JLabel(icon)
+            JOptionPane.showMessageDialog(null, label)
+        }
     }
 
 }

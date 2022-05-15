@@ -1,10 +1,12 @@
 package com.resnik.intel.neural.conv
 
+import org.junit.Ignore
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.net.URL
 import javax.imageio.ImageIO
 
+@Ignore
 class TestConv {
 
     companion object {

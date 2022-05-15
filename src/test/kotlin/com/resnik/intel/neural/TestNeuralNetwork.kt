@@ -1,5 +1,6 @@
 package com.resnik.intel.neural
 
+import com.resnik.intel.TestRenderDelegate
 import com.resnik.intel.neural.TransferFunction.Companion.relu
 import com.resnik.intel.neural.TransferFunction.Companion.tanh
 import com.resnik.math.linear.array.ArrayVector
@@ -13,7 +14,7 @@ import javax.swing.JOptionPane
 import kotlin.math.PI
 import kotlin.math.sin
 
-class TestNeuralNetwork {
+class TestNeuralNetwork : TestRenderDelegate() {
 
     @Test
     fun testNeural1() {
@@ -45,9 +46,11 @@ class TestNeuralNetwork {
             }
         }
         graphics.dispose()
-        val icon = ImageIcon(image)
-        val label = JLabel(icon)
-        JOptionPane.showMessageDialog(null, label)
+        if (RENDER) {
+            val icon = ImageIcon(image)
+            val label = JLabel(icon)
+            JOptionPane.showMessageDialog(null, label)
+        }
     }
 
 
@@ -83,9 +86,11 @@ class TestNeuralNetwork {
 
         }
         graphics.dispose()
-        val icon = ImageIcon(image)
-        val label = JLabel(icon)
-        JOptionPane.showMessageDialog(null, label)
+        if (RENDER) {
+            val icon = ImageIcon(image)
+            val label = JLabel(icon)
+            JOptionPane.showMessageDialog(null, label)
+        }
     }
 
 

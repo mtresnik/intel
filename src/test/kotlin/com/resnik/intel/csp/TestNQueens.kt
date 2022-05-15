@@ -1,10 +1,12 @@
 package com.resnik.intel.csp
 
+import com.resnik.intel.TestRenderDelegate
 import com.resnik.intel.csp.constraint.local.LocalConstraint
 import com.resnik.intel.csp.preprocessors.AC3Preprocessor
 import com.resnik.intel.csp.tree.CSPTree
 import com.resnik.intel.csp.tree.async.CSPDomainAsync
 import com.resnik.intel.csp.tree.async.CSPCoroutine
+import org.junit.Ignore
 import org.junit.Test
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -14,7 +16,7 @@ import javax.swing.ImageIcon
 import javax.swing.JLabel
 import javax.swing.JOptionPane
 
-class TestNQueens {
+class TestNQueens : TestRenderDelegate() {
 
     class QC(columns : List<Int>) : LocalConstraint<Int, Int>(columns) {
 
@@ -56,7 +58,7 @@ class TestNQueens {
 
     @Test
     fun testNQueensTree() {
-        val n = 13
+        val n = 12
         val start = System.currentTimeMillis()
         val cols = (1..n).toList()
         val rows = mutableMapOf<Int, List<Int>>()
@@ -72,6 +74,7 @@ class TestNQueens {
     }
 
     private fun drawBoard(n : Int, solutions : Collection<Map<Int, Int>>) {
+        if (!RENDER) return
         val squareSize = 20
         val imageSize = n * squareSize
         val image = BufferedImage(imageSize, imageSize, BufferedImage.TYPE_INT_RGB)
@@ -141,6 +144,7 @@ class TestNQueens {
         println("Time Taken: $time2")
     }
 
+    @Ignore
     @Test
     fun testNQueensDomainCoroutineFirst() {
         val n = 22
@@ -198,9 +202,10 @@ class TestNQueens {
         drawBoard(n, solutions)
     }
 
+    @Ignore
     @Test
     fun testNQueensDomainCoroutinePreprocess() {
-        val n = 14
+        val n = 12
         val cols = (1..n).toList()
         val rows = mutableMapOf<Int, List<Int>>()
         (1 .. n).forEach{rows[it] = (1..n).toList()}

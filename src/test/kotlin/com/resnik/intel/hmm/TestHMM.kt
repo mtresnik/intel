@@ -14,7 +14,7 @@ class TestHMM {
         val dizzy = "dizzy"
 
         // If you want to map everything yourself (also works with 2d Double Arrays)
-        val initialProbability = mutableMapOf<String, Double>(Pair(healthy, 0.6), Pair(fever, 0.4))
+        val initialProbability = mutableMapOf(Pair(healthy, 0.6), Pair(fever, 0.4))
         val transitionProbability = ArrayMatrix(2, 2)
         transitionProbability[0][0] = 0.7
         transitionProbability[0][1] = 0.3
@@ -27,8 +27,8 @@ class TestHMM {
         emissionProbability[1][0] = 0.1
         emissionProbability[1][1] = 0.3
         emissionProbability[1][2] = 0.6
-        val observations = listOf<String>(normal, cold, dizzy)
-        val hmm = HMM<String, String>(initialProbability, transitionProbability, emissionProbability, observations)
+        val observations = listOf(normal, cold, dizzy)
+        val hmm = HMM(initialProbability, transitionProbability, emissionProbability, observations)
         val likelihood = hmm.viterbi(observations)
         println(likelihood)
     }
@@ -44,7 +44,7 @@ class TestHMM {
         val cold = "cold"
         val dizzy = "dizzy"
 
-        val initialProbability = mutableMapOf<String, Double>(Pair(healthy, 0.6), Pair(fever, 0.4))
+        val initialProbability = mutableMapOf(Pair(healthy, 0.6), Pair(fever, 0.4))
         val transitionProbabilities = mutableMapOf<String, Map<String, Double>>(
             Pair(healthy, mutableMapOf(Pair(healthy, 0.7), Pair(fever, 0.3))),
             Pair(fever, mutableMapOf(Pair(healthy, 0.4), Pair(fever, 0.6)))
@@ -53,8 +53,8 @@ class TestHMM {
             Pair(healthy, mutableMapOf(Pair(normal, 0.5), Pair(cold, 0.4), Pair(dizzy, 0.1))),
             Pair(fever, mutableMapOf(Pair(normal, 0.1), Pair(cold, 0.3), Pair(dizzy, 0.6)))
         )
-        val observations = listOf<String>(normal, cold, dizzy)
-        val hmm = HMM<String, String>(initialProbability, transitionProbabilities, emissionProbabilities)
+        val observations = listOf(normal, cold, dizzy)
+        val hmm = HMM(initialProbability, transitionProbabilities, emissionProbabilities)
         val likelihood = hmm.viterbi(observations)
         println(likelihood)
     }
@@ -67,7 +67,7 @@ class TestHMM {
         val sad = "sad"
         val happy = "happy"
 
-        val initialProbability = mutableMapOf<String, Double>(Pair(rain, 0.375), Pair(sunny, 0.625))
+        val initialProbability = mutableMapOf(Pair(rain, 0.375), Pair(sunny, 0.625))
 
         val transitionProbability = ArrayMatrix(2, 2)
         transitionProbability[0][0] = 0.5
@@ -80,8 +80,8 @@ class TestHMM {
         emissionProbability[1][0] = 0.4
         emissionProbability[1][1] = 0.6
         val allObservations = mutableListOf(sad, happy)
-        val hmm = HMM<String, String>(initialProbability, transitionProbability, emissionProbability, allObservations)
-        val observationSequence = listOf<String>(sad, sad, happy)
+        val hmm = HMM(initialProbability, transitionProbability, emissionProbability, allObservations)
+        val observationSequence = listOf(sad, sad, happy)
         val forward = hmm.forward(observationSequence)
         println(forward)
     }
@@ -89,59 +89,44 @@ class TestHMM {
     @Test
     fun testForward2() {
         // GC content example
-        val H = "H"
-        val L = "L"
+        val stateH = "H"
+        val stateL = "L"
 
         // Observations
-        val A = "A"
-        val C = "C"
-        val G = "G"
-        val T = "T"
+        val observationA = "A"
+        val observationC = "C"
+        val observationG = "G"
+        val observationT = "T"
 
-        val initialProbability = mutableMapOf<String, Double>(Pair(H, 0.5), Pair(L, 0.5))
+        val initialProbability = mutableMapOf(Pair(stateH, 0.5), Pair(stateL, 0.5))
         val transitionProbabilities = mutableMapOf<String, Map<String, Double>>(
-            Pair(H, mutableMapOf(Pair(H, 0.5), Pair(L, 0.5))),
-            Pair(L, mutableMapOf(Pair(H, 0.4), Pair(L, 0.6)))
+            Pair(stateH, mutableMapOf(Pair(stateH, 0.5), Pair(stateL, 0.5))),
+            Pair(stateL, mutableMapOf(Pair(stateH, 0.4), Pair(stateL, 0.6)))
         )
         val emissionProbabilities = mutableMapOf<String, Map<String, Double>>(
-            Pair(H, mutableMapOf(Pair(A, 0.2), Pair(C, 0.3), Pair(G, 0.3), Pair(T, 0.2))),
-            Pair(L, mutableMapOf(Pair(A, 0.3), Pair(C, 0.2), Pair(G, 0.2), Pair(T, 0.3)))
+            Pair(stateH, mutableMapOf(Pair(observationA, 0.2), Pair(observationC, 0.3), Pair(observationG, 0.3), Pair(observationT, 0.2))),
+            Pair(stateL, mutableMapOf(Pair(observationA, 0.3), Pair(observationC, 0.2), Pair(observationG, 0.2), Pair(observationT, 0.3)))
         )
-        val observationSequence = listOf<String>(G, G, C, A)
+        val observationSequence = listOf(observationG, observationG, observationC, observationA)
 
-        val hmm = HMM<String, String>(initialProbability, transitionProbabilities, emissionProbabilities)
+        val hmm = HMM(initialProbability, transitionProbabilities, emissionProbabilities)
         val forward = hmm.forward(observationSequence)
         println(forward)
     }
 
     @Test
     fun testBaumWelch() {
-        val A = "A"
-        val B = "B"
+        val observationA = "A"
+        val observationB = "B"
 
         val observations = mutableListOf<List<Pair<String, Int>>>(
-            mutableListOf(Pair(B, 3), Pair(B, 2), Pair(A, 2)),
-            mutableListOf(Pair(A, 1), Pair(A, 1), Pair(B, 3)),
-            mutableListOf(Pair(B, 1), Pair(A, 2), Pair(B, 3)),
-            mutableListOf(Pair(B, 2), Pair(A, 1), Pair(A, 1))
+            mutableListOf(Pair(observationB, 3), Pair(observationB, 2), Pair(observationA, 2)),
+            mutableListOf(Pair(observationA, 1), Pair(observationA, 1), Pair(observationB, 3)),
+            mutableListOf(Pair(observationB, 1), Pair(observationA, 2), Pair(observationB, 3)),
+            mutableListOf(Pair(observationB, 2), Pair(observationA, 1), Pair(observationA, 1))
         )
         val params = HMM.baumWelch(observations)
         println(params)
-    }
-
-    @Test
-    fun testBaumWelch2() {
-        // Egg example from wikipedia
-        // States
-        val STATE1 = "STATE1"
-        val STATE2 = "STATE2"
-        // Observations
-        val N = "N"
-        val E = "E"
-
-        val initialProbability = mutableMapOf<String, Double>(Pair(STATE1, 0.2), Pair(STATE2, 0.8))
-        val transitionMatrix = ArrayMatrix(arrayOf(doubleArrayOf(0.5, 0.5), doubleArrayOf(0.3, 0.7)))
-        val emissionMatrix = ArrayMatrix(arrayOf(doubleArrayOf(0.3, 0.7), doubleArrayOf(0.8, 0.2)))
     }
 
 }

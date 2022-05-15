@@ -62,11 +62,11 @@ class TestGenetic : TestRenderDelegate() {
         testGeneticString("Goodbye!", 5000)
     }
 
-    fun testGeneticString(testString: String, numEpochs: Int = 500) {
+    private fun testGeneticString(testString: String, numEpochs: Int = 500) {
         val fitnessFunction = object : GeneticFitnessFunction<Char> {
             override fun evaluateFitness(individual: Chromosome<Char>): Double {
                 val chars = individual.values.map { gene -> gene.value }
-                return testString.indices.sumBy { if (testString[it] == chars[it]) 1 else 0 }.toDouble()
+                return testString.indices.sumOf { if (testString[it] == chars[it]) 1.0 else 0.0 }
             }
         }
         val geneFactory = CharacterGeneFactory()
@@ -82,22 +82,11 @@ class TestGenetic : TestRenderDelegate() {
     @Test
     fun testGeneticPoints() {
 
-
-        val equation1 = object : Function2<Double, Double, Double> {
-            override fun invoke(x: Double, y: Double): Double {
-                return 3 * (1 - x).pow(2) * exp(-(x.pow(2))) - (y + 1).pow(2) - 10 * (x / 5 - x.pow(3) - y.pow(5)) * exp(
-                    -x.pow(2) - y.pow(2)
-                ) - (1.0 / 3) * exp(-(x + 1).pow(2) - y.pow(2))
-            }
-        }
-
         val equation2 = object : Function2<Double, Double, Double> {
             override fun invoke(x: Double, y: Double): Double {
                 return (x * x + y * y) * ((x - 2) * (x - 2) + (y - 2) * (y - 2) + 0.1)
             }
         }
-
-        var equation = equation2
 
         val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
         val graphics: Graphics2D = image.createGraphics()
@@ -114,7 +103,7 @@ class TestGenetic : TestRenderDelegate() {
             repeat(height) { row ->
                 val s = row.toDouble() / height
                 val y = s * (maxY - minY) + minY
-                val value = equation(x, y)
+                val value = equation2(x, y)
                 maxValue = max(value, maxValue)
                 if (value < minValue) {
                     minPoint = ArrayPoint(x, y)
@@ -130,7 +119,7 @@ class TestGenetic : TestRenderDelegate() {
             override fun evaluateFitness(individual: Chromosome<Double>): Double {
                 val firstDouble = individual.values[0].value
                 val secondDouble = individual.values[1].value
-                val output = equation(firstDouble, secondDouble)
+                val output = equation2(firstDouble, secondDouble)
                 return (maxValue - output) / (maxValue - minValue)
             }
 

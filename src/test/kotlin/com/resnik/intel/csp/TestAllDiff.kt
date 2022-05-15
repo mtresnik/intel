@@ -19,8 +19,8 @@ class TestAllDiff {
         val C = "C"
         val D = "D"
         val E = "E"
-        val variables = listOf(A, B, C, D, E)
-        val domains = listOf(domainA, domainB, domainC, domainD, domainE)
+        // val variables = listOf(A, B, C, D, E)
+        // val domains = listOf(domainA, domainB, domainC, domainD, domainE)
 
         val domainMap = mapOf(A to domainA, B to domainB, C to domainC, D to domainD, E to domainE)
 

@@ -46,7 +46,7 @@ interface Model {
             val randomIndex = Random.nextInt(0, inputs.size)
             val error = train(inputs[randomIndex], expected[randomIndex])
             if (epoch % printEvery == 0) {
-                val totalError = inputs.indices.sumByDouble { (predict(inputs[it]) - expected[it]).magnitude() }
+                val totalError = inputs.indices.sumOf { (predict(inputs[it]) - expected[it]).magnitude() }
                 println("Iteration: ($epoch , $totalError) dError:${previousError - totalError}")
                 previousError = totalError
             }
@@ -66,7 +66,7 @@ interface Model {
             val randomIndex = Random.nextInt(0, inputs.size)
             val error = train(inputs[randomIndex], expected[randomIndex])
             if (epoch % printEvery == 0) {
-                val totalError = inputs.indices.sumByDouble { (predict(inputs[it]) - expected[it]).magnitude() }
+                val totalError = inputs.indices.sumOf { (predict(inputs[it]) - expected[it]).magnitude() }
                 println("Iteration: ($epoch , $totalError)")
                 if (this is FeedForwardNeuralNetwork && previousError != 0.0) {
                     this.learningRate = abs(1.0 - totalError / previousError) + epoch.toDouble() / epochs

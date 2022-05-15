@@ -17,7 +17,7 @@ class SVM(dim: Int, val kernel: Kernel = RBF, val learningRate: Double = 0.001, 
 
     override fun predict(input: ArrayVector): ArrayVector = ArrayVector(hyperplane(input))
 
-    fun hyperplane(x: ArrayVector): Double {
+    private fun hyperplane(x: ArrayVector): Double {
         val ret = w * x - b
         if (ret <= -1) {
             return -1.0
@@ -28,13 +28,13 @@ class SVM(dim: Int, val kernel: Kernel = RBF, val learningRate: Double = 0.001, 
         return ret
     }
 
-    fun hingeloss(x: ArrayVector, y: Double): Double = (0.0).coerceAtLeast(1 - y * (w * x - b))
+    private fun hingeloss(x: ArrayVector, y: Double): Double = (0.0).coerceAtLeast(1 - y * (w * x - b))
 
-    fun cost(x: Array<ArrayVector>, y: DoubleArray): Double {
-        return lambda * (w.magnitude().pow(2)) + (1.0 / x.size) * x.indices.sumByDouble { hingeloss(x[it], y[it]) }
+    private fun cost(x: Array<ArrayVector>, y: DoubleArray): Double {
+        return lambda * (w.magnitude().pow(2)) + (1.0 / x.size) * x.indices.sumOf { hingeloss(x[it], y[it]) }
     }
 
-    fun cost(x: ArrayVector, y: Double): Double {
+    private fun cost(x: ArrayVector, y: Double): Double {
         val eval = y * hyperplane(x)
         if (eval >= 1) {
             return lambda * (w.magnitude().pow(2))
@@ -42,10 +42,10 @@ class SVM(dim: Int, val kernel: Kernel = RBF, val learningRate: Double = 0.001, 
         return lambda * (w.magnitude().pow(2)) + 1 - y * (w * x - b)
     }
 
-    fun gradient(x: ArrayVector, y: Double): Pair<ArrayVector, Double> {
+    private fun gradient(x: ArrayVector, y: Double): Pair<ArrayVector, Double> {
         val eval = y * hyperplane(x)
-        var dJdW: ArrayVector = ArrayVector(w.size())
-        var dJdB: Double = 0.0
+        val dJdW: ArrayVector
+        val dJdB: Double
         if (eval >= 1) {
             dJdW = w * (2 * lambda)
             dJdB = 0.0
@@ -56,7 +56,7 @@ class SVM(dim: Int, val kernel: Kernel = RBF, val learningRate: Double = 0.001, 
         return Pair(dJdW, dJdB)
     }
 
-    fun update(x: ArrayVector, y: Double) {
+    private fun update(x: ArrayVector, y: Double) {
         val gradient = gradient(x, y)
         w -= gradient.first * learningRate
         b -= gradient.second * learningRate

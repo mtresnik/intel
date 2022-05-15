@@ -39,7 +39,7 @@ class KMeans(val seedPoints: Collection<ArrayPoint>) : Comparable<KMeans> {
 
     operator fun get(point: ArrayPoint): Cluster = getCluster(point)
 
-    fun getMeanVariance(): Double = allClusters.sumByDouble { it.getVariance() } / allClusters.size
+    fun getMeanVariance(): Double = allClusters.sumOf { it.getVariance() } / allClusters.size
 
     companion object {
 

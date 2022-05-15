@@ -156,21 +156,21 @@ class HMM<STATE, OBSERVATION>(
         // Observation sequence size != num observations in total
         val viterbiMatrix = ArrayMatrix(states.size, observationSequence.size)
         // Stores indices of dim states.size x observations.size
-        val backpointerMatrix = Array(states.size) { IntArray(observationSequence.size) }
+        val backPointerMatrix = Array(states.size) { IntArray(observationSequence.size) }
         logPi.values.forEachIndexed { i, logProbability ->
             viterbiMatrix[i][0] = logProbability + logEmissions[i][0]
-            backpointerMatrix[i][0] = 0
+            backPointerMatrix[i][0] = 0
         }
         (1 until observationSequence.size).forEach { j ->
             // Get actual index of observation as it relates to the emission matrix
             val obsIndex = observations.indexOf(observationSequence[j])
             (states.indices).forEach { i ->
                 // Viterbi matrix max for timestep
-                viterbiMatrix[i][j] = states.indices
-                    .map { k -> viterbiMatrix[k][j - 1] + logTransitions[k][i] + logEmissions[i][obsIndex] }
-                    .maxOrNull() ?: throw IllegalStateException()
+                viterbiMatrix[i][j] =
+                    states.indices.maxOfOrNull { k -> viterbiMatrix[k][j - 1] + logTransitions[k][i] + logEmissions[i][obsIndex] }
+                    ?: throw IllegalStateException()
                 // Argmax stored in backpointer matrix
-                backpointerMatrix[i][j] = states.indices
+                backPointerMatrix[i][j] = states.indices
                     .maxByOrNull { k -> viterbiMatrix[k][j - 1] + logTransitions[k][i] + logEmissions[i][obsIndex] }
                     ?: throw IllegalStateException()
             }
@@ -182,7 +182,7 @@ class HMM<STATE, OBSERVATION>(
             states.indices.maxByOrNull { k -> viterbiMatrix[k].last() } ?: throw IllegalStateException()
         bestPath[bestPath.lastIndex] = states[bestPathPointers.last()]
         (observationSequence.lastIndex downTo 1).forEach { j ->
-            bestPathPointers[j - 1] = backpointerMatrix[bestPathPointers[j]][j]
+            bestPathPointers[j - 1] = backPointerMatrix[bestPathPointers[j]][j]
             bestPath[j - 1] = states[bestPathPointers[j - 1]]
         }
         return Path(
@@ -310,7 +310,7 @@ class HMM<STATE, OBSERVATION>(
             if (states.all { it is Comparable<*> }) {
                 states = states
                     .map { it as Comparable<STATE> }
-                    .sortedWith(Comparator { s1, s2 -> s1.compareTo(s2 as STATE) })
+                    .sortedWith { s1, s2 -> s1.compareTo(s2 as STATE) }
                     .map { it as STATE }
                     .toMutableSet()
             }
@@ -318,7 +318,7 @@ class HMM<STATE, OBSERVATION>(
             if (observations.all { it is Comparable<*> }) {
                 observations = observations
                     .map { it as Comparable<OBSERVATION> }
-                    .sortedWith(Comparator { o1, o2 -> o1.compareTo(o2 as OBSERVATION) })
+                    .sortedWith { o1, o2 -> o1.compareTo(o2 as OBSERVATION) }
                     .map { it as OBSERVATION }
                     .toMutableSet()
             }
@@ -372,8 +372,8 @@ class HMM<STATE, OBSERVATION>(
                 row.map { col -> col.toDouble() / row.sum() }.toDoubleArray()
             }.toTypedArray())
             // Convert matrices into their mapped forms
-            val transitionMap = convertToTransitionMap<STATE>(states, transitionMatrix)
-            val emissionMap = convertToEmissionMap<STATE, OBSERVATION>(states, observations, emissionMatrix)
+            val transitionMap = convertToTransitionMap(states, transitionMatrix)
+            val emissionMap = convertToEmissionMap(states, observations, emissionMatrix)
             // Initial parameters
             return HMMParameters(initialProbability, transitionMap, emissionMap)
         }
@@ -399,7 +399,7 @@ class HMM<STATE, OBSERVATION>(
             val states = initialHMMParameters.states()
             val observations = initialHMMParameters.observations()
 
-            var trainingSequences = markedTrainingData.map { it.map { pair -> pair.second } }
+            val trainingSequences = markedTrainingData.map { it.map { pair -> pair.second } }
             var currHMM = initialHMM
             var currIteration = 0
             var currProbability = 0.0
@@ -464,10 +464,10 @@ class HMM<STATE, OBSERVATION>(
                             val lastIndex = trainingSequences[r].lastIndex
                             // For the sum it doesn't really matter if it's T or T - 1 because
                             // arrays fill with 0's anyway... but still for completeness
-                            xiSum += (0 until lastIndex).sumByDouble { t ->
+                            xiSum += (0 until lastIndex).sumOf { t ->
                                 exp(xis[r][i][j][t])
                             }
-                            gammaSum += (0 until lastIndex).sumByDouble { t ->
+                            gammaSum += (0 until lastIndex).sumOf { t ->
                                 exp(gammas[r][i][t])
                             }
                         }
@@ -488,8 +488,9 @@ class HMM<STATE, OBSERVATION>(
                         var numeratorSum = 0.0
                         var denominatorSum = 0.0
                         trainingSequences.indices.forEach { r ->
-                            val T = trainingSequences[r].size
-                            (0 until T).forEach { t ->
+                            // Known as capital T in literature
+                            val sequenceSize = trainingSequences[r].size
+                            (0 until sequenceSize).forEach { t ->
                                 numeratorSum += indicator(vk, trainingSequences[r][t]) * exp(gammas[r][i][t])
                                 denominatorSum += exp(gammas[r][i][t])
                             }
@@ -497,7 +498,7 @@ class HMM<STATE, OBSERVATION>(
                         newEmissions[i][k] = numeratorSum / denominatorSum
                         rowSum += newEmissions[i][k]
                     }
-                    observations.forEachIndexed { k, vk ->
+                    observations.indices.forEach { k ->
                         newEmissions[i][k] /= rowSum
                     }
                 }

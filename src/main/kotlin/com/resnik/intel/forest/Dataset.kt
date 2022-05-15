@@ -36,7 +36,7 @@ class Dataset(val schema: Schema, val targetAttribute: Attribute<*>) : ArrayList
         val uniqueValues = getUniqueValues(attribute)
         uniqueValues.forEach { value ->
             val matchingEntries = this.filter(attribute, value!!)
-            val newEntries = matchingEntries.map { entry -> entry.remove(attribute, newSchema) }
+            val newEntries = matchingEntries.map { entry -> entry.remove(newSchema) }
             val newDataset = Dataset(newSchema, targetAttribute)
             newDataset.addAll(newEntries)
             retList.add(newDataset)
@@ -116,7 +116,7 @@ class Dataset(val schema: Schema, val targetAttribute: Attribute<*>) : ArrayList
     companion object {
         fun xLog2x(x: Double): Double {
             if (x == 0.0) {
-                return 0.0;
+                return 0.0
             }
             return x * log(x, 2.0)
         }

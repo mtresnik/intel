@@ -14,7 +14,7 @@ class Entry(val schema: Schema, vararg toSet: Any) {
         values[index] = value
     }
 
-    fun remove(attribute: Attribute<*>, newSchema: Schema): Entry {
+    fun remove(newSchema: Schema): Entry {
         val newValues = mutableListOf<Any>()
         newSchema.attributes.forEach {
             newValues.add(this[it])
@@ -23,7 +23,7 @@ class Entry(val schema: Schema, vararg toSet: Any) {
     }
 
     init {
-        toSet.forEachIndexed { index, any ->
+        toSet.indices.forEach { index ->
             this[index] = toSet[index]
         }
     }

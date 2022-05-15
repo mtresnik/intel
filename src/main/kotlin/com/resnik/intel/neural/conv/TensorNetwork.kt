@@ -5,7 +5,7 @@ import com.resnik.math.linear.array.ArrayTensor
 
 class TensorNetwork : TensorLayer {
 
-    val layers: MutableList<TensorLayer> = mutableListOf()
+    private val layers: MutableList<TensorLayer> = mutableListOf()
     lateinit var inputDimensions: ArrayDimension
     var initialized = false
 

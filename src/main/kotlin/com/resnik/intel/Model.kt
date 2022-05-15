@@ -1,12 +1,11 @@
 package com.resnik.intel
 
-import com.resnik.intel.neural.FeedForwardNeuralNetwork
 import com.resnik.math.linear.array.ArrayVector
-import kotlin.math.abs
 import kotlin.random.Random
 
 interface Model {
 
+    @Deprecated("Adds bias to first inputs more than later inputs.")
     fun train(inputs: Array<ArrayVector>, expected: Array<ArrayVector>): Double {
         if (inputs.size != expected.size) {
             throw IllegalArgumentException("Inputs must equal outputs")
@@ -34,55 +33,8 @@ interface Model {
         }
     }
 
-    fun trainRandomTotalError(
-        inputs: Array<ArrayVector>,
-        expected: Array<ArrayVector>,
-        epochs: Int = 10000,
-        printEvery: Int = 1000
-    ) {
-        var previousError = 0.0
-        repeat(epochs) { epoch ->
-            // Poll random index to train
-            val randomIndex = Random.nextInt(0, inputs.size)
-            val error = train(inputs[randomIndex], expected[randomIndex])
-            if (epoch % printEvery == 0) {
-                val totalError = inputs.indices.sumOf { (predict(inputs[it]) - expected[it]).magnitude() }
-                println("Iteration: ($epoch , $totalError) dError:${previousError - totalError}")
-                previousError = totalError
-            }
-        }
-    }
-
-    fun trainRandomAdjusted(
-        inputs: Array<ArrayVector>,
-        expected: Array<ArrayVector>,
-        epochs: Int = 10000,
-        printEvery: Int = 1000
-    ) {
-        val originalLearningRate = if (this is FeedForwardNeuralNetwork) this.learningRate else 1.0
-        var previousError = 0.0
-        repeat(epochs) { epoch ->
-            // Poll random index to train
-            val randomIndex = Random.nextInt(0, inputs.size)
-            val error = train(inputs[randomIndex], expected[randomIndex])
-            if (epoch % printEvery == 0) {
-                val totalError = inputs.indices.sumOf { (predict(inputs[it]) - expected[it]).magnitude() }
-                println("Iteration: ($epoch , $totalError)")
-                if (this is FeedForwardNeuralNetwork && previousError != 0.0) {
-                    this.learningRate = abs(1.0 - totalError / previousError) + epoch.toDouble() / epochs
-                    if (totalError == previousError) {
-                        return
-                    } else if (abs(totalError / previousError) < 0.1) {
-                        this.learningRate = 0.1
-                    }
-                }
-                previousError = totalError
-            }
-        }
-    }
-
     fun trainBatch(inputs: Array<ArrayVector>, expected: Array<ArrayVector>, epochs: Int = 10000, batchSize: Int = 8) {
-        repeat(epochs) { epoch ->
+        repeat(epochs) {
             val randomIndex = Random.nextInt(0, inputs.size)
             for (i in randomIndex until randomIndex + batchSize) {
                 val index = i % inputs.size

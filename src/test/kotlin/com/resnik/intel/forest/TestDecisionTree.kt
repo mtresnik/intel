@@ -1,7 +1,6 @@
 package com.resnik.intel.forest
 
 import org.junit.Test
-import java.lang.Boolean
 import kotlin.String
 
 class TestDecisionTree {
@@ -61,19 +60,19 @@ class TestDecisionTree {
         val entry1 = Entry(schema)
         entry1[input] = "Boy"
         entry1[middle] = "Young"
-        entry1[output] = Boolean.TRUE
+        entry1[output] = true
         val entry2 = Entry(schema)
         entry2[input] = "Boy"
         entry2[middle] = "Old"
-        entry2[output] = Boolean.FALSE
+        entry2[output] = false
         val entry3 = Entry(schema)
         entry3[input] = "Girl"
         entry3[middle] = "Young"
-        entry3[output] = Boolean.TRUE
+        entry3[output] = true
         val entry4 = Entry(schema)
         entry4[input] = "Girl"
         entry4[middle] = "Old"
-        entry4[output] = Boolean.FALSE
+        entry4[output] = false
         dataset.add(entry1)
         dataset.add(entry2)
         dataset.add(entry3)

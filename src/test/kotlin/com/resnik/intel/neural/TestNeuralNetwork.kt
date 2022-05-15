@@ -4,6 +4,7 @@ import com.resnik.intel.TestRenderDelegate
 import com.resnik.intel.neural.TransferFunction.Companion.relu
 import com.resnik.intel.neural.TransferFunction.Companion.tanh
 import com.resnik.math.linear.array.ArrayVector
+import org.junit.Ignore
 import org.junit.Test
 import java.awt.Color
 import java.awt.Graphics2D
@@ -16,8 +17,48 @@ import kotlin.math.sin
 
 class TestNeuralNetwork : TestRenderDelegate() {
 
+    @Ignore
     @Test
-    fun testNeural1() {
+    fun testNeuralLinearTrain() {
+        val network = FeedForwardNeuralNetwork(2, 2, 1, transferFunction = relu)
+        network.learningRate = 0.1
+        network.momentum = 0.0
+        repeat(10000) {
+            network.train(
+                arrayOf(ArrayVector(0.0, 0.0), ArrayVector(1.0, 0.0), ArrayVector(0.0, 1.0), ArrayVector(1.0, 1.0)),
+                arrayOf(ArrayVector(0.0), ArrayVector(1.0), ArrayVector(1.0), ArrayVector(0.0))
+            )
+        }
+        println(network.predict(ArrayVector(0.0, 0.0)))
+        println(network.predict(ArrayVector(1.0, 0.0)))
+        println(network.predict(ArrayVector(0.0, 1.0)))
+        println(network.predict(ArrayVector(1.0, 1.0)))
+
+        if (RENDER) {
+            val width = 500
+            val height = width
+            val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
+            val graphics: Graphics2D = image.createGraphics()
+            graphics.background = Color.WHITE
+            graphics.clearRect(0, 0, width, height)
+            repeat(width) { col ->
+                val x = col.toDouble() / (width - 1)
+                repeat(height) { row ->
+                    val y = row.toDouble() / (height - 1)
+                    val z = network.predict(ArrayVector(x, y))[0].toFloat()
+                    image.setRGB(col, row, Color(z, z, z).rgb)
+
+                }
+            }
+            graphics.dispose()
+            val icon = ImageIcon(image)
+            val label = JLabel(icon)
+            JOptionPane.showMessageDialog(null, label)
+        }
+    }
+
+    @Test
+    fun testNeuralRandom() {
         val network = FeedForwardNeuralNetwork(2, 2, 1, transferFunction = relu)
         network.learningRate = 0.1
         network.momentum = 0.0
@@ -30,23 +71,23 @@ class TestNeuralNetwork : TestRenderDelegate() {
         println(network.predict(ArrayVector(0.0, 1.0)))
         println(network.predict(ArrayVector(1.0, 1.0)))
 
-        val width = 500
-        val height = width
-        val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
-        val graphics: Graphics2D = image.createGraphics()
-        graphics.background = Color.WHITE
-        graphics.clearRect(0, 0, width, height)
-        repeat(width) { col ->
-            val x = col.toDouble() / (width - 1)
-            repeat(height) { row ->
-                val y = row.toDouble() / (height - 1)
-                val z = network.predict(ArrayVector(x, y))[0].toFloat()
-                image.setRGB(col, row, Color(z, z, z).rgb)
-
-            }
-        }
-        graphics.dispose()
         if (RENDER) {
+            val width = 500
+            val height = width
+            val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
+            val graphics: Graphics2D = image.createGraphics()
+            graphics.background = Color.WHITE
+            graphics.clearRect(0, 0, width, height)
+            repeat(width) { col ->
+                val x = col.toDouble() / (width - 1)
+                repeat(height) { row ->
+                    val y = row.toDouble() / (height - 1)
+                    val z = network.predict(ArrayVector(x, y))[0].toFloat()
+                    image.setRGB(col, row, Color(z, z, z).rgb)
+
+                }
+            }
+            graphics.dispose()
             val icon = ImageIcon(image)
             val label = JLabel(icon)
             JOptionPane.showMessageDialog(null, label)

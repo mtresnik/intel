@@ -7,14 +7,14 @@ class KDTree<T>(private val dim: Int) {
 
     var root: KDTreeNode<T>? = null
 
-    operator fun plus(value: KDTreeValue<T>) = insert(value, root, 0);
+    operator fun plus(value: KDTreeValue<T>) = insert(value, root, 0)
 
     operator fun set(point: ArrayPoint, value: T) = plus(KDTreeValue(point, value))
 
-    fun insert(value: KDTreeValue<T>, current: KDTreeNode<T>?, currDim: Int): KDTreeNode<T> {
+    private fun insert(value: KDTreeValue<T>, current: KDTreeNode<T>?, currDim: Int): KDTreeNode<T> {
         if (root == null) {
             root = KDTreeNode(value)
-            return root!!;
+            return root!!
         }
         if (current == null) {
             return KDTreeNode(value)
@@ -39,7 +39,7 @@ class KDTree<T>(private val dim: Int) {
         if (!root!!.hasChildren()) {
             return root
         }
-        var temp: KDTreeNode<T>? = null
+        val temp: KDTreeNode<T>?
         // Change dim comparing to at each step.
         if (point[currDim] < current.value.point[currDim]) {
             // Keep going in a "less" direction
@@ -79,15 +79,14 @@ class KDTree<T>(private val dim: Int) {
         if (!root!!.hasChildren()) {
             return mutableListOf(root!!)
         }
-        val closest: KDTreeNode<T>?
         knn(point, current.left, (currDim + 1) % dim, currList, k)
         knn(point, current.right, (currDim + 1) % dim, currList, k)
-        if (point[currDim] < current.value.point[currDim]) {
+        val closest: KDTreeNode<T> = if (point[currDim] < current.value.point[currDim]) {
             // Keep going in a "less" direction
-            closest = (current.left ?: current)
+            (current.left ?: current)
         } else {
             // Keep going in a "greater / equal" direction
-            closest = (current.right ?: current)
+            (current.right ?: current)
         }
         if (!currList.contains(closest)) currList.add(closest)
         return currList

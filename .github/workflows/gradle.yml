@@ -38,3 +38,6 @@ jobs:
       uses: gradle/gradle-build-action@main
       with:
         arguments: build
+      env:
+        USERNAME: ${{ github.actor }}
+        TOKEN: ${{ secrets.GITHUB_TOKEN }}

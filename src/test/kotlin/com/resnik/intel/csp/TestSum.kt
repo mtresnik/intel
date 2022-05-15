@@ -26,7 +26,8 @@ class TestSum {
             B to domainB,
             C to domainC,
             D to domainD,
-            E to domainE)
+            E to domainE
+        )
 
         val csp = CSPCoroutine(domainMap)
         csp.addConstraint(IntSumConstraint(variables, 22))

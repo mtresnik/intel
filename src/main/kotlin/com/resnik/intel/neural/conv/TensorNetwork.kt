@@ -5,20 +5,20 @@ import com.resnik.math.linear.array.ArrayTensor
 
 class TensorNetwork : TensorLayer {
 
-    val layers : MutableList<TensorLayer> = mutableListOf()
-    lateinit var inputDimensions : ArrayDimension
+    val layers: MutableList<TensorLayer> = mutableListOf()
+    lateinit var inputDimensions: ArrayDimension
     var initialized = false
 
-    constructor(inputDimensions : ArrayDimension){
+    constructor(inputDimensions: ArrayDimension) {
         this.inputDimensions = inputDimensions
         initialized = true
     }
 
-    constructor(){}
+    constructor() {}
 
-    fun add(layer : TensorLayer) : TensorNetwork {
+    fun add(layer: TensorLayer): TensorNetwork {
         layers.add(layer)
-        if(!initialized){
+        if (!initialized) {
             this.inputDimensions = layer.inputDimensions()
             initialized = true
         }
@@ -26,7 +26,7 @@ class TensorNetwork : TensorLayer {
     }
 
     override fun forward(input: ArrayTensor): ArrayTensor {
-        var out : ArrayTensor = input
+        var out: ArrayTensor = input
         layers.forEach {
             println("Forward")
             out = it.forward(out)
@@ -44,6 +44,7 @@ class TensorNetwork : TensorLayer {
 
     override fun inputDimensions(): ArrayDimension = inputDimensions
 
-    override fun outputDimensions(): ArrayDimension = if(layers.isEmpty()) inputDimensions else layers.last().outputDimensions()
+    override fun outputDimensions(): ArrayDimension =
+        if (layers.isEmpty()) inputDimensions else layers.last().outputDimensions()
 
 }

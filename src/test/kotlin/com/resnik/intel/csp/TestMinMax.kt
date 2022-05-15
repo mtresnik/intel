@@ -7,7 +7,7 @@ import org.junit.Test
 
 class TestMinMax {
 
-    class SumMinConstraint<VAR>(variables : List<VAR>) : MinimumConstraint<VAR, Int>(variables) {
+    class SumMinConstraint<VAR>(variables: List<VAR>) : MinimumConstraint<VAR, Int>(variables) {
 
         override fun evaluate(assignment: Map<VAR, Int>): Double {
             return assignment.values.sum().toDouble()
@@ -17,11 +17,11 @@ class TestMinMax {
 
     @Test
     fun testMin() {
-        val domainA = (1 .. 10).toList()
-        val domainB = (1 .. 10).toList()
-        val domainC = (1 .. 10).toList()
-        val domainD = (1 .. 10).toList()
-        val domainE = (1 .. 10).toList()
+        val domainA = (1..10).toList()
+        val domainB = (1..10).toList()
+        val domainC = (1..10).toList()
+        val domainD = (1..10).toList()
+        val domainE = (1..10).toList()
 
         val A = "A"
         val B = "B"
@@ -39,7 +39,7 @@ class TestMinMax {
         val solutions = csp.findAllSolutions()
         println("Num Solutions: ${solutions.size}")
         println("Time: ${csp.finalTime()}")
-        solutions.forEach{ println(it.values) }
+        solutions.forEach { println(it.values) }
 
     }
 

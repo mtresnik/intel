@@ -2,7 +2,6 @@ package com.resnik.intel.hmm
 
 import com.resnik.math.linear.array.ArrayMatrix
 import com.resnik.math.linear.array.ArrayVector
-import java.lang.IllegalStateException
 import kotlin.math.exp
 import kotlin.math.ln
 
@@ -36,40 +35,60 @@ import kotlin.math.ln
  * @param observations All possible observations of size M
  * */
 class HMM<STATE, OBSERVATION>(
-    private val initialProbability : Map<STATE, Double>,
-    private val transitions : ArrayMatrix,
+    private val initialProbability: Map<STATE, Double>,
+    private val transitions: ArrayMatrix,
     private val emissions: ArrayMatrix,
     observations: Collection<OBSERVATION>
 ) {
 
     // Overhead log calcs to reduce complexity
-    private val logPi : ArrayVector = ArrayVector(*initialProbability.values.map { ln(it) }.toDoubleArray())
-    private val logTransitions : ArrayMatrix = transitions.apply { ln(it) }
-    private val logEmissions : ArrayMatrix = emissions.apply { ln(it) }
+    private val logPi: ArrayVector = ArrayVector(*initialProbability.values.map { ln(it) }.toDoubleArray())
+    private val logTransitions: ArrayMatrix = transitions.apply { ln(it) }
+    private val logEmissions: ArrayMatrix = emissions.apply { ln(it) }
 
     /** Length N */
     private val states = initialProbability.keys.toSet().toList()
+
     /** Length N */
     private val pi = initialProbability.values.toList()
+
     /** Length M */
     private val observations = observations.toSet().toList()
 
-    constructor(other : HMM<STATE, OBSERVATION>) : this(other.getParameters())
+    constructor(other: HMM<STATE, OBSERVATION>) : this(other.getParameters())
 
-    constructor(hmmParameters: HMMParameters<STATE, OBSERVATION>) : this(hmmParameters.initialProbability, hmmParameters.transitions, hmmParameters.emissions)
+    constructor(hmmParameters: HMMParameters<STATE, OBSERVATION>) : this(
+        hmmParameters.initialProbability,
+        hmmParameters.transitions,
+        hmmParameters.emissions
+    )
 
-    constructor(initialProbability : Map<STATE, Double>, transitions : Array<DoubleArray>, emissions : Array<DoubleArray>, observations: Collection<OBSERVATION>) :
+    constructor(
+        initialProbability: Map<STATE, Double>,
+        transitions: Array<DoubleArray>,
+        emissions: Array<DoubleArray>,
+        observations: Collection<OBSERVATION>
+    ) :
             this(initialProbability, ArrayMatrix(transitions), ArrayMatrix(emissions), observations)
 
-    constructor(initialProbability: Map<STATE, Double>, transitionProbability : Map<STATE, Map<STATE, Double>>, emissions : Map<STATE, Map<OBSERVATION, Double>>)
-    : this(initialProbability,
+    constructor(
+        initialProbability: Map<STATE, Double>,
+        transitionProbability: Map<STATE, Map<STATE, Double>>,
+        emissions: Map<STATE, Map<OBSERVATION, Double>>
+    )
+            : this(
+        initialProbability,
         convertToTransitionArrayMatrix(initialProbability.keys.toList(), transitionProbability),
         convertToEmissionArrayMatrix(initialProbability.keys, emissions.entries.first().value.keys.toList(), emissions),
         emissions.entries.first().value.keys.toList()
     )
 
-    fun getParameters() : HMMParameters<STATE, OBSERVATION> {
-        return HMMParameters(initialProbability, convertToTransitionMap(states, transitions), convertToEmissionMap(states, observations, emissions))
+    fun getParameters(): HMMParameters<STATE, OBSERVATION> {
+        return HMMParameters(
+            initialProbability,
+            convertToTransitionMap(states, transitions),
+            convertToEmissionMap(states, observations, emissions)
+        )
     }
 
     /**
@@ -82,7 +101,7 @@ class HMM<STATE, OBSERVATION>(
      * @see states
      * @param observationSequence Sequence of observations with length T
      * */
-    fun forward(observationSequence: List<OBSERVATION>) : ProbabilityValue<ArrayMatrix> {
+    fun forward(observationSequence: List<OBSERVATION>): ProbabilityValue<ArrayMatrix> {
         // Also known as a "forward" matrix, used for "recursion"
         // "recursion" as mathematical not stack based
         val alphaMatrix = ArrayMatrix(states.size, observationSequence.size)
@@ -98,12 +117,12 @@ class HMM<STATE, OBSERVATION>(
                 // Need to use log-sum-exp trick here, converting p(a|b) -> L(a|b)
                 // And converting a * b * c -> ln(a) + ln(b) + ln(c)
                 alphaMatrix[state][T] = DoubleArray(states.size) {
-                    alphaMatrix[it][T -1] + logTransitions[it][state] + emissions[state][obsIndex]
+                    alphaMatrix[it][T - 1] + logTransitions[it][state] + emissions[state][obsIndex]
                 }.logsumexp()
             }
         }
         val t = observationSequence.lastIndex
-        val logProbability = DoubleArray(states.size) {i -> alphaMatrix[i][t]}.logsumexp()
+        val logProbability = DoubleArray(states.size) { i -> alphaMatrix[i][t] }.logsumexp()
         return ProbabilityValue(alphaMatrix, logProbability)
     }
 
@@ -111,7 +130,7 @@ class HMM<STATE, OBSERVATION>(
      * Generates a matrix of size (N x T)
      *
      * */
-    fun backward(observationSequence: List<OBSERVATION>) : ProbabilityValue<ArrayMatrix> {
+    fun backward(observationSequence: List<OBSERVATION>): ProbabilityValue<ArrayMatrix> {
         // Generates a beta matrix
         val betaMatrix = ArrayMatrix(states.size, observationSequence.size)
         // Boundary condition
@@ -133,11 +152,11 @@ class HMM<STATE, OBSERVATION>(
      *
      * @param observationSequence A sequence of observations, not to be confused with all possible observations.
      * */
-    fun viterbi(observationSequence: List<OBSERVATION>) : Path<STATE> {
+    fun viterbi(observationSequence: List<OBSERVATION>): Path<STATE> {
         // Observation sequence size != num observations in total
         val viterbiMatrix = ArrayMatrix(states.size, observationSequence.size)
         // Stores indices of dim states.size x observations.size
-        val backpointerMatrix = Array(states.size){ IntArray(observationSequence.size) }
+        val backpointerMatrix = Array(states.size) { IntArray(observationSequence.size) }
         logPi.values.forEachIndexed { i, logProbability ->
             viterbiMatrix[i][0] = logProbability + logEmissions[i][0]
             backpointerMatrix[i][0] = 0
@@ -148,48 +167,57 @@ class HMM<STATE, OBSERVATION>(
             (states.indices).forEach { i ->
                 // Viterbi matrix max for timestep
                 viterbiMatrix[i][j] = states.indices
-                    .map { k -> viterbiMatrix[k][j-1] + logTransitions[k][i] + logEmissions[i][obsIndex] }
+                    .map { k -> viterbiMatrix[k][j - 1] + logTransitions[k][i] + logEmissions[i][obsIndex] }
                     .maxOrNull() ?: throw IllegalStateException()
                 // Argmax stored in backpointer matrix
                 backpointerMatrix[i][j] = states.indices
-                    .maxByOrNull { k -> viterbiMatrix[k][j-1] + logTransitions[k][i] + logEmissions[i][obsIndex] }
+                    .maxByOrNull { k -> viterbiMatrix[k][j - 1] + logTransitions[k][i] + logEmissions[i][obsIndex] }
                     ?: throw IllegalStateException()
             }
         }
         // pointers and path are populated by best state for observation index
         val bestPathPointers = IntArray(observationSequence.size)
-        val bestPath = MutableList<STATE?>(observationSequence.size){null}
-        bestPathPointers[bestPathPointers.lastIndex] = states.indices.maxByOrNull { k -> viterbiMatrix[k].last() } ?: throw IllegalStateException()
+        val bestPath = MutableList<STATE?>(observationSequence.size) { null }
+        bestPathPointers[bestPathPointers.lastIndex] =
+            states.indices.maxByOrNull { k -> viterbiMatrix[k].last() } ?: throw IllegalStateException()
         bestPath[bestPath.lastIndex] = states[bestPathPointers.last()]
-        (observationSequence.lastIndex downTo   1).forEach { j ->
+        (observationSequence.lastIndex downTo 1).forEach { j ->
             bestPathPointers[j - 1] = backpointerMatrix[bestPathPointers[j]][j]
-            bestPath[j - 1] = states[bestPathPointers[j-1]]
+            bestPath[j - 1] = states[bestPathPointers[j - 1]]
         }
-        return Path(bestPath.map { it ?: throw IllegalStateException() }, viterbiMatrix[bestPathPointers[bestPathPointers.lastIndex]].last())
+        return Path(
+            bestPath.map { it ?: throw IllegalStateException() },
+            viterbiMatrix[bestPathPointers[bestPathPointers.lastIndex]].last()
+        )
     }
 
-    open class ProbabilityValue<VALUE>(val value : VALUE, val probability: Double) {
+    open class ProbabilityValue<VALUE>(val value: VALUE, val probability: Double) {
         override fun toString(): String = "Value: $value \t Probability: $probability"
     }
 
-    data class Path<STATE>(private val path : List<STATE>, private val p : Double) : ProbabilityValue<List<STATE>>(path, p)
+    data class Path<STATE>(private val path: List<STATE>, private val p: Double) :
+        ProbabilityValue<List<STATE>>(path, p)
 
     data class HMMParameters<STATE, OBSERVATION>(
-        val initialProbability : Map<STATE, Double>,
-        val transitions : Map<STATE, Map<STATE, Double>>,
-        val emissions : Map<STATE, Map<OBSERVATION, Double>>,
-        var probability: Double = 1.0) {
+        val initialProbability: Map<STATE, Double>,
+        val transitions: Map<STATE, Map<STATE, Double>>,
+        val emissions: Map<STATE, Map<OBSERVATION, Double>>,
+        var probability: Double = 1.0
+    ) {
 
-        fun states() : Set<STATE> = initialProbability.keys
+        fun states(): Set<STATE> = initialProbability.keys
 
-        fun observations() : Set<OBSERVATION> = emissions.entries.first().value.keys
+        fun observations(): Set<OBSERVATION> = emissions.entries.first().value.keys
 
     }
 
     companion object {
 
         // Helper function for map conversions
-        private fun <STATE> convertToTransitionArrayMatrix(states : Collection<STATE>, transitionProbability : Map<STATE, Map<STATE, Double>>) : ArrayMatrix {
+        private fun <STATE> convertToTransitionArrayMatrix(
+            states: Collection<STATE>,
+            transitionProbability: Map<STATE, Map<STATE, Double>>
+        ): ArrayMatrix {
             val ret = ArrayMatrix(states.size, states.size)
             states.forEachIndexed { row, rowState ->
                 val internalMap = transitionProbability[rowState] ?: throw IllegalStateException()
@@ -203,7 +231,10 @@ class HMM<STATE, OBSERVATION>(
             return ret
         }
 
-        private fun <STATE> convertToTransitionMap(states : Collection<STATE>, transitionMatrix: ArrayMatrix) : Map<STATE, Map<STATE, Double>> {
+        private fun <STATE> convertToTransitionMap(
+            states: Collection<STATE>,
+            transitionMatrix: ArrayMatrix
+        ): Map<STATE, Map<STATE, Double>> {
             val transitionMap = mutableMapOf<STATE, Map<STATE, Double>>()
             states.forEachIndexed { row, state ->
                 val tempMap = mutableMapOf<STATE, Double>()
@@ -217,9 +248,11 @@ class HMM<STATE, OBSERVATION>(
 
         // Helper function for map conversions
         private fun <STATE, OBSERVATION>
-                convertToEmissionArrayMatrix(states : Collection<STATE>,
-                                             observations: Collection<OBSERVATION>,
-                                             emissions : Map<STATE, Map<OBSERVATION, Double>>) : ArrayMatrix {
+                convertToEmissionArrayMatrix(
+            states: Collection<STATE>,
+            observations: Collection<OBSERVATION>,
+            emissions: Map<STATE, Map<OBSERVATION, Double>>
+        ): ArrayMatrix {
             val ret = ArrayMatrix(states.size, observations.size)
             // Make sure state / obs indices line up
             states.forEachIndexed { row, rowState ->
@@ -235,7 +268,11 @@ class HMM<STATE, OBSERVATION>(
             return ret
         }
 
-        private fun <STATE, OBSERVATION> convertToEmissionMap(states: Collection<STATE>, observations : Collection<OBSERVATION>, emissionMatrix: ArrayMatrix) :
+        private fun <STATE, OBSERVATION> convertToEmissionMap(
+            states: Collection<STATE>,
+            observations: Collection<OBSERVATION>,
+            emissionMatrix: ArrayMatrix
+        ):
                 Map<STATE, Map<OBSERVATION, Double>> {
             val emissionMap = mutableMapOf<STATE, Map<OBSERVATION, Double>>()
             states.forEachIndexed { row, state ->
@@ -255,9 +292,11 @@ class HMM<STATE, OBSERVATION>(
          * Add extraStates and extraObservations as parameters if you expect to use this model on futured expected states / obs.
          * */
         @Suppress("UNCHECKED_CAST")
-        fun<STATE, OBSERVATION> estimateInitialParameters(markedObservations : List<List<Pair<STATE, OBSERVATION>>>,
-                                                          extraStates : List<STATE> = mutableListOf(),
-                                                          extraObservations : List<OBSERVATION> = mutableListOf())
+        fun <STATE, OBSERVATION> estimateInitialParameters(
+            markedObservations: List<List<Pair<STATE, OBSERVATION>>>,
+            extraStates: List<STATE> = mutableListOf(),
+            extraObservations: List<OBSERVATION> = mutableListOf()
+        )
                 : HMMParameters<STATE, OBSERVATION> {
             // Approximate parameters using marked observations first for transition / emission / initial
             // Find all defined states / observations from marked pairs
@@ -268,18 +307,18 @@ class HMM<STATE, OBSERVATION>(
             observations.addAll(markedObservations.flatten().map { it.second })
             observations.addAll(extraObservations)
             // Sort elements for readability of results (if possible)
-            if(states.all { it is Comparable<*> }) {
+            if (states.all { it is Comparable<*> }) {
                 states = states
                     .map { it as Comparable<STATE> }
-                    .sortedWith(Comparator{ s1, s2 -> s1.compareTo(s2 as STATE) })
+                    .sortedWith(Comparator { s1, s2 -> s1.compareTo(s2 as STATE) })
                     .map { it as STATE }
                     .toMutableSet()
             }
             // Sort observations if possible as well for readability
-            if(observations.all { it is Comparable<*> }) {
+            if (observations.all { it is Comparable<*> }) {
                 observations = observations
                     .map { it as Comparable<OBSERVATION> }
-                    .sortedWith(Comparator{ o1, o2 -> o1.compareTo(o2 as OBSERVATION)})
+                    .sortedWith(Comparator { o1, o2 -> o1.compareTo(o2 as OBSERVATION) })
                     .map { it as OBSERVATION }
                     .toMutableSet()
             }
@@ -288,14 +327,19 @@ class HMM<STATE, OBSERVATION>(
             val firstStates = markedObservations.map { it.first() }
             val tempProbability = mutableMapOf<STATE, Double>()
             // Need to put these in order of the states defined above so it keeps array / matrix order
-            tempProbability.putAll(states.map { Pair(it, firstStates.count { pair -> pair.first == it }.toDouble() / markedObservations.size)})
+            tempProbability.putAll(states.map {
+                Pair(
+                    it,
+                    firstStates.count { pair -> pair.first == it }.toDouble() / markedObservations.size
+                )
+            })
             val initialProbability = mutableMapOf<STATE, Double>()
             states.forEach { initialProbability[it] = tempProbability[it]!! }
 
             /* Count the previous state given the current state into a 2d IntArray of size NxN
                Default value is 0 for int arrays
                Ordered based on state list defined above */
-            val stateCountArray = Array(states.size){ IntArray(states.size) { 0 } }
+            val stateCountArray = Array(states.size) { IntArray(states.size) { 0 } }
             markedObservations.forEach { sequence ->
                 // Starting at 1 because first element doesn't have a prior element
                 (1 until sequence.size).forEach { index ->
@@ -340,14 +384,16 @@ class HMM<STATE, OBSERVATION>(
          * OR when num iterations is reached.
          *
          * */
-        fun <STATE, OBSERVATION> baumWelch(markedTrainingData : List<List<Pair<STATE, OBSERVATION>>>,
-                                           extraStates : List<STATE> = mutableListOf(),
-                                           extraObservations : List<OBSERVATION> = mutableListOf(),
-                                           initialHMMParameters: HMMParameters<STATE, OBSERVATION> =
-                                               estimateInitialParameters(markedTrainingData, extraStates, extraObservations),
-                                           numIterations : Int = 100,
-                                           epsilon : Double? = null)
-        : HMMParameters<STATE, OBSERVATION> {
+        fun <STATE, OBSERVATION> baumWelch(
+            markedTrainingData: List<List<Pair<STATE, OBSERVATION>>>,
+            extraStates: List<STATE> = mutableListOf(),
+            extraObservations: List<OBSERVATION> = mutableListOf(),
+            initialHMMParameters: HMMParameters<STATE, OBSERVATION> =
+                estimateInitialParameters(markedTrainingData, extraStates, extraObservations),
+            numIterations: Int = 100,
+            epsilon: Double? = null
+        )
+                : HMMParameters<STATE, OBSERVATION> {
             // Setup needed initial parameters if not defined
             val initialHMM = HMM(initialHMMParameters)
             val states = initialHMMParameters.states()
@@ -357,10 +403,10 @@ class HMM<STATE, OBSERVATION>(
             var currHMM = initialHMM
             var currIteration = 0
             var currProbability = 0.0
-            while(currIteration < numIterations) {
+            while (currIteration < numIterations) {
                 // Iterate over each training sequence
                 // Use forward probability from sequence for epsilon
-                if(epsilon != null && currProbability < epsilon){
+                if (epsilon != null && currProbability < epsilon) {
                     break
                 }
                 val gammas = mutableListOf<ArrayMatrix>()
@@ -379,7 +425,7 @@ class HMM<STATE, OBSERVATION>(
                     // Normalized by row (for all j in time-step t)
                     val gamma = (alpha + beta).apply { it - forwardProbability }
                     // NxNxT
-                    val xi = Array(states.size){Array(states.size){ DoubleArray(sequence.size) }}
+                    val xi = Array(states.size) { Array(states.size) { DoubleArray(sequence.size) } }
                     (0 until sequence.lastIndex).forEach { t ->
                         // Max index of t is T.lastIndex - 1 so beta won't go out of bounds here
                         val nextObservation = sequence[t + 1]
@@ -387,8 +433,9 @@ class HMM<STATE, OBSERVATION>(
 
                         states.indices.forEach { i ->
                             states.indices.forEach { j ->
-                                xi[i][j][t] = exp(alpha[i][t] + currHMM.logTransitions[i][j] + beta[j][t + 1] + currHMM.logEmissions[j][nextEmissionIndex] - forwardProbability)
-                                if(xi[i][j][t].isNaN()) xi[i][j][t] = 0.0
+                                xi[i][j][t] =
+                                    exp(alpha[i][t] + currHMM.logTransitions[i][j] + beta[j][t + 1] + currHMM.logEmissions[j][nextEmissionIndex] - forwardProbability)
+                                if (xi[i][j][t].isNaN()) xi[i][j][t] = 0.0
                             }
                         }
                     }
@@ -432,7 +479,7 @@ class HMM<STATE, OBSERVATION>(
                     }
                 }
 
-                fun indicator(obs1 : OBSERVATION, obs2 : OBSERVATION) : Int = if(obs1 == obs2) 1 else 0
+                fun indicator(obs1: OBSERVATION, obs2: OBSERVATION): Int = if (obs1 == obs2) 1 else 0
 
                 val newEmissions = ArrayMatrix(states.size, observations.size)
                 states.indices.forEach { i ->
@@ -457,9 +504,11 @@ class HMM<STATE, OBSERVATION>(
                 // Replace currHMM with newHMM
                 currHMM = HMM(newInitialProbabilities, newTransitions, newEmissions, observations)
                 // Find next probability by using forwards on all sequences
-                val sequenceProbabilities = trainingSequences.map { sequence -> exp(currHMM.forward(sequence).probability) }
+                val sequenceProbabilities =
+                    trainingSequences.map { sequence -> exp(currHMM.forward(sequence).probability) }
                 val sequenceProbabilitySum = sequenceProbabilities.sum()
-                currProbability = sequenceProbabilities.map { probability -> probability / sequenceProbabilitySum }.average()
+                currProbability =
+                    sequenceProbabilities.map { probability -> probability / sequenceProbabilitySum }.average()
                 println(with(currHMM.getParameters()) {
                     this.probability = currProbability
                     this

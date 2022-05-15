@@ -5,6 +5,6 @@ import com.resnik.math.linear.array.ArrayVector
 @FunctionalInterface
 interface Kernel {
 
-    fun apply(x1: ArrayVector, x2: ArrayVector) : Double
+    fun apply(x1: ArrayVector, x2: ArrayVector): Double
 
 }

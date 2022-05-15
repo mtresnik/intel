@@ -5,12 +5,12 @@ import com.resnik.math.linear.array.*
 import java.awt.Color
 import java.awt.image.BufferedImage
 
-fun BufferedImage.split() : Triple<ArrayMatrix, ArrayMatrix, ArrayMatrix> {
+fun BufferedImage.split(): Triple<ArrayMatrix, ArrayMatrix, ArrayMatrix> {
     val rMatrix = ArrayMatrix(this.height, this.width)
     val gMatrix = ArrayMatrix(this.height, this.width)
     val bMatrix = ArrayMatrix(this.height, this.width)
-    repeat(this.height){row ->
-        repeat(this.width){col ->
+    repeat(this.height) { row ->
+        repeat(this.width) { col ->
             val color = Color(this.getRGB(col, row))
             rMatrix[row][col] = color.red / 255.0
             gMatrix[row][col] = color.green / 255.0
@@ -20,10 +20,10 @@ fun BufferedImage.split() : Triple<ArrayMatrix, ArrayMatrix, ArrayMatrix> {
     return Triple(rMatrix, gMatrix, bMatrix)
 }
 
-fun BufferedImage.toGreyScaleMatrix() : ArrayMatrix {
+fun BufferedImage.toGreyScaleMatrix(): ArrayMatrix {
     val ret = ArrayMatrix(this.height, this.width)
-    repeat(this.height){row ->
-        repeat(this.width){col ->
+    repeat(this.height) { row ->
+        repeat(this.width) { col ->
             val color = Color(this.getRGB(col, row))
             ret[row][col] = (color.red + color.green + color.blue) / (255.0 + 3.0)
         }
@@ -31,13 +31,14 @@ fun BufferedImage.toGreyScaleMatrix() : ArrayMatrix {
     return ret
 }
 
-fun BufferedImage.applyGreyScaleFilter(filter: ArrayMatrix) : BufferedImage = this.toGreyScaleMatrix().convolve(filter).toGreyscaleImage()
+fun BufferedImage.applyGreyScaleFilter(filter: ArrayMatrix): BufferedImage =
+    this.toGreyScaleMatrix().convolve(filter).toGreyscaleImage()
 
-fun ArrayMatrix.toGreyscaleImage() : BufferedImage {
+fun ArrayMatrix.toGreyscaleImage(): BufferedImage {
     val normalized = this.relu()
     val ret = BufferedImage(this.width, this.height, BufferedImage.TYPE_INT_RGB)
-    repeat(this.height){row ->
-        repeat(this.width){col ->
+    repeat(this.height) { row ->
+        repeat(this.width) { col ->
             val maxVal = normalized[row][col].toFloat().coerceAtMost(1.0f)
             ret.setRGB(col, row, Color(maxVal, maxVal, maxVal).rgb)
         }
@@ -45,19 +46,19 @@ fun ArrayMatrix.toGreyscaleImage() : BufferedImage {
     return ret
 }
 
-fun ArrayMatrix.applyFilter(other: ArrayMatrix) : ArrayMatrix {
+fun ArrayMatrix.applyFilter(other: ArrayMatrix): ArrayMatrix {
     val ret = ArrayMatrix(this.height - other.height + 1, this.width - other.width + 1)
     val centerRow = other.height / 2
     val centerCol = other.width / 2
-    repeat(ret.height){row ->
-        repeat(ret.width){col ->
+    repeat(ret.height) { row ->
+        repeat(ret.width) { col ->
             var sum = 0.0
-            repeat(other.height){row1 ->
+            repeat(other.height) { row1 ->
                 val expectedRow = row + row1 - centerRow
-                if(expectedRow < this.height && expectedRow >= 0){
-                    repeat(other.width){col1 ->
+                if (expectedRow < this.height && expectedRow >= 0) {
+                    repeat(other.width) { col1 ->
                         val expectedCol = col + col1 - centerCol
-                        if(col + col1 < this.width && expectedCol >= 0){
+                        if (col + col1 < this.width && expectedCol >= 0) {
                             sum += this[expectedRow][expectedCol] * other[row1][col1]
                         }
                     }
@@ -69,20 +70,20 @@ fun ArrayMatrix.applyFilter(other: ArrayMatrix) : ArrayMatrix {
     return ret
 }
 
-fun ArrayMatrix.relu() : ArrayMatrix = this.apply { TransferFunction.relu.activate(it) }
+fun ArrayMatrix.relu(): ArrayMatrix = this.apply { TransferFunction.relu.activate(it) }
 
-fun ArrayMatrix.convolve(filter: ArrayMatrix) : ArrayMatrix = this.applyFilter(filter).relu()
+fun ArrayMatrix.convolve(filter: ArrayMatrix): ArrayMatrix = this.applyFilter(filter).relu()
 
-fun ArrayMatrix.pool(poolSize: Int = 2) : ArrayMatrix {
+fun ArrayMatrix.pool(poolSize: Int = 2): ArrayMatrix {
     val ret = ArrayMatrix(this.height / poolSize, this.width / poolSize)
-    repeat(ret.height){row ->
-        repeat(ret.width){col ->
+    repeat(ret.height) { row ->
+        repeat(ret.width) { col ->
             var max = 0.0
-            repeat(poolSize){row1 ->
-                if(row *poolSize+ row1 < this.height){
-                    repeat(poolSize){col1 ->
-                        if(col*poolSize + col1 < this.width){
-                            max = Math.max(this[row *poolSize+ row1][col*poolSize + col1], max)
+            repeat(poolSize) { row1 ->
+                if (row * poolSize + row1 < this.height) {
+                    repeat(poolSize) { col1 ->
+                        if (col * poolSize + col1 < this.width) {
+                            max = Math.max(this[row * poolSize + row1][col * poolSize + col1], max)
                         }
                     }
                 }
@@ -93,11 +94,11 @@ fun ArrayMatrix.pool(poolSize: Int = 2) : ArrayMatrix {
     return ret
 }
 
-fun ArrayMatrix.flatten() : ArrayVector {
+fun ArrayMatrix.flatten(): ArrayVector {
     val ret = ArrayVector(this.height * this.width)
     var i = 0
-    repeat(this.height){row ->
-        repeat(this.width){col ->
+    repeat(this.height) { row ->
+        repeat(this.width) { col ->
             ret[i] = this[row][col]
             i++
         }
@@ -105,10 +106,10 @@ fun ArrayMatrix.flatten() : ArrayVector {
     return ret
 }
 
-fun BufferedImage.toTensor() : ArrayTensor {
+fun BufferedImage.toTensor(): ArrayTensor {
     val retTensor = ArrayTensor(ArrayDimension(this.height, this.width, 3))
-    repeat(this.height){row ->
-        repeat(this.width){col ->
+    repeat(this.height) { row ->
+        repeat(this.width) { col ->
             val color = Color(this.getRGB(col, row))
             retTensor[ArrayTensorIndex(row, col, 0)] = color.red / 255.0
             retTensor[ArrayTensorIndex(row, col, 1)] = color.green / 255.0

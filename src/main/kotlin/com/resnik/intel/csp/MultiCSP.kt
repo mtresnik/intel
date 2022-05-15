@@ -2,18 +2,19 @@ package com.resnik.intel.csp
 
 import com.resnik.intel.csp.preprocessors.CSPPreprocessor
 
-abstract class MultiCSP<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
-                                     sortVariables : Boolean = SORT_VARIABLES_DEFAULT,
-                                     preprocessors : List<CSPPreprocessor<VAR, DOMAIN>> = mutableListOf())
-    : CSPBase<VAR, DOMAIN>(domainMap, sortVariables, preprocessors){
+abstract class MultiCSP<VAR, DOMAIN>(
+    domainMap: Map<VAR, List<DOMAIN>>,
+    sortVariables: Boolean = SORT_VARIABLES_DEFAULT,
+    preprocessors: List<CSPPreprocessor<VAR, DOMAIN>> = mutableListOf()
+) : CSPBase<VAR, DOMAIN>(domainMap, sortVariables, preprocessors) {
 
     open fun findAllSolutions(): List<Map<VAR, DOMAIN>> = genSequence().toList().filter { isReusablyConsistent(it) }
 
     override fun getFirstSolution(): Map<VAR, DOMAIN>? = genSequence().firstOrNull()
 
-    open fun genSequence() : Sequence<Map<VAR, DOMAIN>> = sequence {  }
+    open fun genSequence(): Sequence<Map<VAR, DOMAIN>> = sequence { }
 
-    fun getFrequencies() : Map<VAR, Map<DOMAIN, Int>> {
+    fun getFrequencies(): Map<VAR, Map<DOMAIN, Int>> {
         // Get Solutions
         val solutions = findAllSolutions()
         // Setup retMap
@@ -34,7 +35,7 @@ abstract class MultiCSP<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
         return retMap
     }
 
-    fun getProbabilities() : Map<VAR, Map<DOMAIN, Double>> {
+    fun getProbabilities(): Map<VAR, Map<DOMAIN, Double>> {
         val frequencies = getFrequencies()
         // Normalize frequencies st probabilities[var].sum() = 1.0
         val retMap = mutableMapOf<VAR, MutableMap<DOMAIN, Double>>()
@@ -43,7 +44,7 @@ abstract class MultiCSP<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
             val sum = frequencies[variable]!!.values.sum().toDouble()
             val currMap = mutableMapOf<DOMAIN, Double>()
             val domains = domainMap[variable]!!
-            if(sum <= 0.0) {
+            if (sum <= 0.0) {
                 // Make each domain value 0.0
                 domains.forEach { domain -> currMap[domain] = 0.0 }
             } else {

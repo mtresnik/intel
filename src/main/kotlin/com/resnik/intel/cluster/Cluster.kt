@@ -11,14 +11,14 @@ class Cluster(val seed: ArrayPoint, vararg optionalPoints: ArrayPoint) : ArrayLi
         this.addAll(optionalPoints)
     }
 
-    fun getMean() : ArrayPoint =
+    fun getMean(): ArrayPoint =
         ArrayPoint(*DoubleArray(dim) { index ->
             var sum = 0.0; this.forEach { point -> sum += point[index] }; sum / this.size
         })
 
-    fun distanceTo(other: ArrayPoint) : Double = getMean().distanceTo(other)
+    fun distanceTo(other: ArrayPoint): Double = getMean().distanceTo(other)
 
-    fun getVariance() : Double {
+    fun getVariance(): Double {
         val mean = getMean()
         return sumOf { point -> point.distanceTo(mean) } / size
     }

@@ -1,10 +1,10 @@
 package com.resnik.intel.forest
 
-class Entry(val schema: Schema, vararg toSet : Any) {
+class Entry(val schema: Schema, vararg toSet: Any) {
 
-    val values: Array<Any> = Array(schema.attributes.size){}
+    val values: Array<Any> = Array(schema.attributes.size) {}
 
-    operator fun get(attribute: Attribute<*>) : Any = values[schema.indexOf(attribute)]
+    operator fun get(attribute: Attribute<*>): Any = values[schema.indexOf(attribute)]
 
     operator fun set(attribute: Attribute<*>, value: Any) {
         values[schema.indexOf(attribute)] = value
@@ -14,7 +14,7 @@ class Entry(val schema: Schema, vararg toSet : Any) {
         values[index] = value
     }
 
-    fun remove(attribute: Attribute<*>, newSchema: Schema) : Entry {
+    fun remove(attribute: Attribute<*>, newSchema: Schema): Entry {
         val newValues = mutableListOf<Any>()
         newSchema.attributes.forEach {
             newValues.add(this[it])

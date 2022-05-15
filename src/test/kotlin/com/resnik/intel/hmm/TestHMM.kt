@@ -34,7 +34,7 @@ class TestHMM {
     }
 
     @Test
-    fun testHMM2(){
+    fun testHMM2() {
         // States
         val healthy = "Healthy"
         val fever = "Fever"
@@ -87,7 +87,7 @@ class TestHMM {
     }
 
     @Test
-    fun testForward2(){
+    fun testForward2() {
         // GC content example
         val H = "H"
         val L = "L"
@@ -115,7 +115,7 @@ class TestHMM {
     }
 
     @Test
-    fun testBaumWelch(){
+    fun testBaumWelch() {
         val A = "A"
         val B = "B"
 
@@ -130,7 +130,7 @@ class TestHMM {
     }
 
     @Test
-    fun testBaumWelch2(){
+    fun testBaumWelch2() {
         // Egg example from wikipedia
         // States
         val STATE1 = "STATE1"

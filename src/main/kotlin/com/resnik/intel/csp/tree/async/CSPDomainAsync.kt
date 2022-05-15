@@ -11,14 +11,15 @@ import java.util.concurrent.Executors
  * Useful for when domain size is significant. For a binary tree this would speed up calcs by a factor of 2...
  * For an n-ary tree, this would speed up calcs by a factor of n | n < MAX_THREAD_COUNT
  * */
-class CSPDomainAsync<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
-                                  maxTime : Long = Long.MAX_VALUE,
-                                  maxThreads : Int = MAX_THREAD_COUNT,
-                                  sortVariables : Boolean = SORT_VARIABLES_DEFAULT,
-                                  preprocessors : List<CSPPreprocessor<VAR, DOMAIN>> = mutableListOf())
-    : CSPAsyncBase<VAR, DOMAIN>(domainMap, maxTime, maxThreads, sortVariables, preprocessors) {
+class CSPDomainAsync<VAR, DOMAIN>(
+    domainMap: Map<VAR, List<DOMAIN>>,
+    maxTime: Long = Long.MAX_VALUE,
+    maxThreads: Int = MAX_THREAD_COUNT,
+    sortVariables: Boolean = SORT_VARIABLES_DEFAULT,
+    preprocessors: List<CSPPreprocessor<VAR, DOMAIN>> = mutableListOf()
+) : CSPAsyncBase<VAR, DOMAIN>(domainMap, maxTime, maxThreads, sortVariables, preprocessors) {
 
-    override fun findAllSolutions() : List<Map<VAR, DOMAIN>> {
+    override fun findAllSolutions(): List<Map<VAR, DOMAIN>> {
         preprocess()
         onStart()
         val agents = constructAgents()
@@ -31,13 +32,14 @@ class CSPDomainAsync<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
         agents.forEach { agent ->
             executor.execute {
                 val solutions = agent.findAllSolutions()
-                synchronized(retList){
+                synchronized(retList) {
                     retList.addAll(solutions)
                 }
             }
         }
         executor.shutdown()
-        while(!executor.isTerminated) {}
+        while (!executor.isTerminated) {
+        }
         onFinish()
         return retList
     }
@@ -55,18 +57,19 @@ class CSPDomainAsync<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
         agents.forEach { agent ->
             executor.execute {
                 val solution = agent.getFirstSolution()
-                synchronized(retList){
-                    if(retList.isEmpty()) retList.add(solution)
+                synchronized(retList) {
+                    if (retList.isEmpty()) retList.add(solution)
                 }
             }
         }
         executor.shutdown()
-        while(!executor.isTerminated) {}
+        while (!executor.isTerminated) {
+        }
         onFinish()
         return retList.firstOrNull()
     }
 
-    override fun constructAgents() : List<CSPAgent<VAR, DOMAIN>> {
+    override fun constructAgents(): List<CSPAgent<VAR, DOMAIN>> {
         val retList = Collections.synchronizedList(mutableListOf<CSPAgent<VAR, DOMAIN>>())
         // Construct for first variable in list
         val variables = getVariables()

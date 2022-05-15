@@ -8,14 +8,15 @@ import kotlinx.coroutines.*
 import java.util.*
 import java.util.concurrent.Executors
 
-class CSPCoroutine<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
-                                maxTime : Long = Long.MAX_VALUE,
-                                maxThreads : Int = MAX_THREAD_COUNT,
-                                sortVariables : Boolean = SORT_VARIABLES_DEFAULT,
-                                preprocessors : List<CSPPreprocessor<VAR, DOMAIN>> = mutableListOf())
-    : CSPAsyncBase<VAR, DOMAIN>(domainMap, maxTime, maxThreads, sortVariables, preprocessors) {
+class CSPCoroutine<VAR, DOMAIN>(
+    domainMap: Map<VAR, List<DOMAIN>>,
+    maxTime: Long = Long.MAX_VALUE,
+    maxThreads: Int = MAX_THREAD_COUNT,
+    sortVariables: Boolean = SORT_VARIABLES_DEFAULT,
+    preprocessors: List<CSPPreprocessor<VAR, DOMAIN>> = mutableListOf()
+) : CSPAsyncBase<VAR, DOMAIN>(domainMap, maxTime, maxThreads, sortVariables, preprocessors) {
 
-    override fun findAllSolutions() : List<Map<VAR, DOMAIN>> {
+    override fun findAllSolutions(): List<Map<VAR, DOMAIN>> {
         preprocess()
         onStart()
         val agents = constructAgents()
@@ -25,7 +26,7 @@ class CSPCoroutine<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
         val jobs = agents.map { agent ->
             scope.launch(dispatcher) {
                 val solutions = agent.findAllSolutions()
-                synchronized(retList){
+                synchronized(retList) {
                     retList.addAll(solutions)
                 }
             }
@@ -45,8 +46,8 @@ class CSPCoroutine<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
         val jobs = agents.map { agent ->
             scope.launch(dispatcher) {
                 val solution = agent.getFirstSolution()
-                synchronized(retList){
-                    if(retList.isEmpty()) retList.add(solution)
+                synchronized(retList) {
+                    if (retList.isEmpty()) retList.add(solution)
                     dispatcher.cancel()
                 }
             }
@@ -56,7 +57,7 @@ class CSPCoroutine<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
         return retList.firstOrNull()
     }
 
-    override fun constructAgents() : List<CSPAgent<VAR, DOMAIN>> {
+    override fun constructAgents(): List<CSPAgent<VAR, DOMAIN>> {
         // Construct for first variable in list
         val variables = getVariables()
         val first = variables.firstOrNull() ?: return listOf()
@@ -77,11 +78,11 @@ class CSPCoroutine<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
 
     companion object {
 
-        private var setThreads : Int = -1
-        private var dispatcher : CoroutineDispatcher? = null
+        private var setThreads: Int = -1
+        private var dispatcher: CoroutineDispatcher? = null
 
-        private fun getDispatcher(threadCount : Int = MAX_THREAD_COUNT) : CoroutineDispatcher {
-            if(threadCount == setThreads && dispatcher != null) return dispatcher!!
+        private fun getDispatcher(threadCount: Int = MAX_THREAD_COUNT): CoroutineDispatcher {
+            if (threadCount == setThreads && dispatcher != null) return dispatcher!!
             setThreads = threadCount
             dispatcher = Executors.newFixedThreadPool(threadCount).asCoroutineDispatcher()
             return dispatcher!!

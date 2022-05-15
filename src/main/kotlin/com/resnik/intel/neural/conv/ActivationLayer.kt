@@ -4,9 +4,9 @@ import com.resnik.intel.neural.TransferFunction
 import com.resnik.math.linear.array.ArrayDimension
 import com.resnik.math.linear.array.ArrayTensor
 
-open class ActivationLayer(val inputDimensions : ArrayDimension, val transferFunction: TransferFunction) : TensorLayer {
+open class ActivationLayer(val inputDimensions: ArrayDimension, val transferFunction: TransferFunction) : TensorLayer {
 
-    lateinit var recentInput : ArrayTensor
+    lateinit var recentInput: ArrayTensor
 
     override fun forward(input: ArrayTensor): ArrayTensor {
         recentInput = input
@@ -14,7 +14,7 @@ open class ActivationLayer(val inputDimensions : ArrayDimension, val transferFun
     }
 
     override fun backward(outputGrads: ArrayTensor, learningRate: Double): ArrayTensor =
-            outputGrads * ArrayTensor(recentInput.dim) { transferFunction.derivative(recentInput.values[it]) }
+        outputGrads * ArrayTensor(recentInput.dim) { transferFunction.derivative(recentInput.values[it]) }
 
     override fun inputDimensions(): ArrayDimension = inputDimensions
 

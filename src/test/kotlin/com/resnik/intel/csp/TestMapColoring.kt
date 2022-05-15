@@ -16,10 +16,10 @@ import javax.swing.JOptionPane
 
 class TestMapColoring : TestRenderDelegate() {
 
-    class MCC(private val from : String, private val to : String) : LocalConstraint<String, String>(listOf(from, to)){
+    class MCC(private val from: String, private val to: String) : LocalConstraint<String, String>(listOf(from, to)) {
 
         override fun isPossiblySatisfied(assignment: Map<String, String>): Boolean {
-            if(from !in assignment || to !in assignment)
+            if (from !in assignment || to !in assignment)
                 return true
             return assignment[from]!! != assignment[to]!!
         }
@@ -29,14 +29,14 @@ class TestMapColoring : TestRenderDelegate() {
     private val WA = "Western Australia"
     private val NT = "Northern Territory"
     private val SA = "South Australia"
-    private val Q  = "Queensland"
-    private val NSW= "New South Wales"
-    private val V  = "Victoria"
-    private val T  = "Tasmania"
+    private val Q = "Queensland"
+    private val NSW = "New South Wales"
+    private val V = "Victoria"
+    private val T = "Tasmania"
 
-    private val red     = "red"
-    private val green   = "green"
-    private val blue    = "blue"
+    private val red = "red"
+    private val green = "green"
+    private val blue = "blue"
 
     private val colors = listOf(red, green, blue)
 
@@ -97,10 +97,10 @@ class TestMapColoring : TestRenderDelegate() {
         println("Time Taken: $time")
     }
 
-    class MapColoringConstraint<DOMAIN>(val from : Int, val to : Int) : LocalConstraint<Int, DOMAIN>(listOf(from, to)) {
+    class MapColoringConstraint<DOMAIN>(val from: Int, val to: Int) : LocalConstraint<Int, DOMAIN>(listOf(from, to)) {
 
         override fun isPossiblySatisfied(assignment: Map<Int, DOMAIN>): Boolean {
-            if(from !in assignment || to !in assignment)
+            if (from !in assignment || to !in assignment)
                 return true
             return assignment[from]!! != assignment[to]!!
         }
@@ -123,7 +123,7 @@ class TestMapColoring : TestRenderDelegate() {
             }
         }
 
-        val neighbors = Array<MutableList<Int>>(allTiles.size){ mutableListOf() }
+        val neighbors = Array<MutableList<Int>>(allTiles.size) { mutableListOf() }
         allTiles.forEachIndexed { index, rect ->
             neighbors[index] = rect.getNeighborIndices(allTiles).toMutableList()
         }
@@ -173,14 +173,14 @@ class TestMapColoring : TestRenderDelegate() {
             Rect(0.0, 2.0, 1.0, 1.0), Rect(3.0, 2.0, 1.0, 2.0),
             Rect(0.0, 3.0, 3.0, 1.0)
         )
-        val neighbors = Array<MutableList<Int>>(allTiles.size){ mutableListOf() }
+        val neighbors = Array<MutableList<Int>>(allTiles.size) { mutableListOf() }
         allTiles.forEachIndexed { index, rect ->
             neighbors[index] = rect.getNeighborIndices(allTiles).toMutableList()
         }
-        val firstColor = Color(0,128,0)
-        val secondColor = Color(0, 0,128)
-        val thirdColor = Color(128, 0,0)
-        val fourthColor = Color(0, 128,128)
+        val firstColor = Color(0, 128, 0)
+        val secondColor = Color(0, 0, 128)
+        val thirdColor = Color(128, 0, 0)
+        val fourthColor = Color(0, 128, 128)
         val domains = listOf(firstColor.rgb, secondColor.rgb, thirdColor.rgb, fourthColor.rgb)
         val domainMap = allTiles.indices.associateWith { domains }
         val csp = CSPTree(domainMap)
@@ -199,18 +199,18 @@ class TestMapColoring : TestRenderDelegate() {
         val imageHeight = 300
         val image = BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB)
 
-        fun pixelsToRelative(col : Int, row : Int) : Pair<Double, Double> {
+        fun pixelsToRelative(col: Int, row: Int): Pair<Double, Double> {
             return (col.toDouble() / (imageWidth - 1) to row.toDouble() / (imageHeight - 1))
         }
 
-        fun relativeToPixels(x : Double, y : Double) : Pair<Int, Int> {
-            val col = (x*(imageWidth - 1)).toInt().coerceIn(0, imageWidth - 1)
-            val row = (y*(imageHeight - 1)).toInt().coerceIn(0, imageHeight - 1)
+        fun relativeToPixels(x: Double, y: Double): Pair<Int, Int> {
+            val col = (x * (imageWidth - 1)).toInt().coerceIn(0, imageWidth - 1)
+            val row = (y * (imageHeight - 1)).toInt().coerceIn(0, imageHeight - 1)
             return Pair(col, row)
         }
 
-        fun tileToRelative(tx : Double, ty : Double) : Pair<Double, Double> {
-            return Pair((tx/rectsWidth).coerceIn(0.0, 1.0), (ty/rectsHeight).coerceIn(0.0, 1.0))
+        fun tileToRelative(tx: Double, ty: Double): Pair<Double, Double> {
+            return Pair((tx / rectsWidth).coerceIn(0.0, 1.0), (ty / rectsHeight).coerceIn(0.0, 1.0))
         }
 
         repeat(imageHeight) { row ->
@@ -242,8 +242,6 @@ class TestMapColoring : TestRenderDelegate() {
         }
 
     }
-
-
 
 
 }

@@ -1,8 +1,9 @@
 package com.resnik.intel.csp.collection
 
-class VarDomainMapCollection<VAR, DOMAIN>(private val variables : List<VAR>,
-                                          val domainMap : Map<VAR, List<DOMAIN>>)
-    : VarDomainCollection<VAR, DOMAIN> {
+class VarDomainMapCollection<VAR, DOMAIN>(
+    private val variables: List<VAR>,
+    val domainMap: Map<VAR, List<DOMAIN>>
+) : VarDomainCollection<VAR, DOMAIN> {
 
     private val domains = domainMap.values.toList()
 

@@ -23,44 +23,50 @@ class TestGenetic : TestRenderDelegate() {
     val width = 800
     val height = width
 
-    fun pointToCoord(pt: ArrayPoint) : Pair<Int, Int> {
+    fun pointToCoord(pt: ArrayPoint): Pair<Int, Int> {
         val x = pt.values[0]
         val y = pt.values[1]
         val relX = (x - minX) / (maxX - minX)
         val relY = 1.0 - (y - minY) / (maxY - minY)
-        return Pair(floor(relX*width).toInt(), floor(relY*height).toInt())
+        return Pair(floor(relX * width).toInt(), floor(relY * height).toInt())
     }
 
-    fun drawLine(pt1: ArrayPoint, pt2: ArrayPoint, graphics2D: Graphics2D, paint: Color = Color.BLACK, stroke: Float = 1.0f){
+    fun drawLine(
+        pt1: ArrayPoint,
+        pt2: ArrayPoint,
+        graphics2D: Graphics2D,
+        paint: Color = Color.BLACK,
+        stroke: Float = 1.0f
+    ) {
         graphics2D.paint = paint
         graphics2D.stroke = BasicStroke(stroke)
         val firstCoords = pointToCoord(pt1)
         val secondCoords = pointToCoord(pt2)
         println("Drawline from: $firstCoords to $secondCoords")
-        graphics2D.drawLine(firstCoords.first,firstCoords.second, secondCoords.first, secondCoords.second)
+        graphics2D.drawLine(firstCoords.first, firstCoords.second, secondCoords.first, secondCoords.second)
     }
 
-    fun drawPoint(pt: ArrayPoint, graphics2D: Graphics2D, paint: Color = Color.BLACK){
+    fun drawPoint(pt: ArrayPoint, graphics2D: Graphics2D, paint: Color = Color.BLACK) {
         graphics2D.paint = paint
         val coords = pointToCoord(pt)
-        graphics2D.fillOval(coords.first, coords.second, width/50, width/50)
+        graphics2D.fillOval(coords.first, coords.second, width / 50, width / 50)
     }
 
     @Test
-    fun testGeneticString(){
+    fun testGeneticString() {
         testGeneticString("Hello!")
     }
 
     @Test
-    fun testGeneticString2(){
+    fun testGeneticString2() {
         testGeneticString("Goodbye!", 5000)
     }
 
-    fun testGeneticString(testString: String, numEpochs : Int = 500){
+    fun testGeneticString(testString: String, numEpochs: Int = 500) {
         val fitnessFunction = object : GeneticFitnessFunction<Char> {
             override fun evaluateFitness(individual: Chromosome<Char>): Double {
                 val chars = individual.values.map { gene -> gene.value }
-                return testString.indices.sumBy { if(testString[it] == chars[it]) 1 else 0 }.toDouble()
+                return testString.indices.sumBy { if (testString[it] == chars[it]) 1 else 0 }.toDouble()
             }
         }
         val geneFactory = CharacterGeneFactory()
@@ -68,23 +74,26 @@ class TestGenetic : TestRenderDelegate() {
             numberOfGenes = testString.length,
             populationSize = 100,
             fitnessFunction = fitnessFunction,
-            geneFactory = geneFactory)
+            geneFactory = geneFactory
+        )
         geneticAlgorithm.trainEpoch(numEpochs)
     }
 
     @Test
-    fun testGeneticPoints(){
+    fun testGeneticPoints() {
 
 
-        val equation1 = object : Function2<Double, Double, Double>{
+        val equation1 = object : Function2<Double, Double, Double> {
             override fun invoke(x: Double, y: Double): Double {
-                return 3 * (1 - x).pow(2) * exp(-(x.pow(2))) - (y+1).pow(2) - 10 * (x / 5 - x.pow(3) - y.pow(5)) * exp(-x.pow(2) - y.pow(2)) - (1.0/3) * exp(-(x+1).pow(2) - y.pow(2))
+                return 3 * (1 - x).pow(2) * exp(-(x.pow(2))) - (y + 1).pow(2) - 10 * (x / 5 - x.pow(3) - y.pow(5)) * exp(
+                    -x.pow(2) - y.pow(2)
+                ) - (1.0 / 3) * exp(-(x + 1).pow(2) - y.pow(2))
             }
         }
 
-        val equation2 = object : Function2<Double, Double, Double>{
+        val equation2 = object : Function2<Double, Double, Double> {
             override fun invoke(x: Double, y: Double): Double {
-                return (x*x + y*y) * ((x-2)*(x-2) + (y-2)*(y-2) + 0.1)
+                return (x * x + y * y) * ((x - 2) * (x - 2) + (y - 2) * (y - 2) + 0.1)
             }
         }
 
@@ -93,21 +102,21 @@ class TestGenetic : TestRenderDelegate() {
         val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
         val graphics: Graphics2D = image.createGraphics()
         graphics.background = Color.WHITE
-        graphics.clearRect(0,0, width, height)
+        graphics.clearRect(0, 0, width, height)
 
         var minValue = Double.MAX_VALUE
         var maxValue = -Double.MAX_VALUE
         var minPoint = ArrayPoint(0.0, 0.0)
         val tripleList = mutableListOf<Triple<Int, Int, Double>>()
-        repeat(width){col ->
+        repeat(width) { col ->
             val t = col.toDouble() / width
             val x = t * (maxX - minX) + minX
-            repeat(height){row ->
+            repeat(height) { row ->
                 val s = row.toDouble() / height
                 val y = s * (maxY - minY) + minY
-                val value = equation(x,y)
+                val value = equation(x, y)
                 maxValue = max(value, maxValue)
-                if(value < minValue){
+                if (value < minValue) {
                     minPoint = ArrayPoint(x, y)
                 }
                 minValue = min(value, minValue)
@@ -154,7 +163,7 @@ class TestGenetic : TestRenderDelegate() {
             bestPoints.add(pair)
         }
 
-        bestPoints.zipWithNext{ first, second ->
+        bestPoints.zipWithNext { first, second ->
             val firstPoint = ArrayPoint(first.first, first.second)
             val secondPoint = ArrayPoint(second.first, second.second)
             drawLine(firstPoint, secondPoint, graphics, Color.RED)

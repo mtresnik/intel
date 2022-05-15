@@ -6,13 +6,13 @@ import kotlin.math.tanh
 interface TransferFunction {
 
 
-    fun activate(x: Double) : Double
+    fun activate(x: Double): Double
 
-    fun derivative(x : Double) : Double
+    fun derivative(x: Double): Double
 
     companion object {
 
-        val sigmoid : TransferFunction = object : TransferFunction {
+        val sigmoid: TransferFunction = object : TransferFunction {
 
             override fun activate(x: Double): Double = 1 / (1 + kotlin.math.exp(-x))
 
@@ -20,11 +20,11 @@ interface TransferFunction {
 
         }
 
-        val relu : TransferFunction = object : TransferFunction {
+        val relu: TransferFunction = object : TransferFunction {
 
-            override fun activate(x : Double): Double = x.coerceAtLeast(0.0)
+            override fun activate(x: Double): Double = x.coerceAtLeast(0.0)
 
-            override fun derivative(x: Double): Double = if(x <= 0) 0.0 else 1.0
+            override fun derivative(x: Double): Double = if (x <= 0) 0.0 else 1.0
 
         }
 

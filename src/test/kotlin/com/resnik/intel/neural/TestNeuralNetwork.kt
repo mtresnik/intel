@@ -18,12 +18,12 @@ class TestNeuralNetwork : TestRenderDelegate() {
 
     @Test
     fun testNeural1() {
-        val network = FeedForwardNeuralNetwork(2,2,1, transferFunction = relu)
+        val network = FeedForwardNeuralNetwork(2, 2, 1, transferFunction = relu)
         network.learningRate = 0.1
         network.momentum = 0.0
         network.trainRandom(
-                arrayOf(ArrayVector(0.0, 0.0), ArrayVector(1.0, 0.0), ArrayVector(0.0, 1.0), ArrayVector(1.0, 1.0)),
-                arrayOf(ArrayVector(0.0), ArrayVector(1.0), ArrayVector(1.0), ArrayVector(0.0))
+            arrayOf(ArrayVector(0.0, 0.0), ArrayVector(1.0, 0.0), ArrayVector(0.0, 1.0), ArrayVector(1.0, 1.0)),
+            arrayOf(ArrayVector(0.0), ArrayVector(1.0), ArrayVector(1.0), ArrayVector(0.0))
         )
         println(network.predict(ArrayVector(0.0, 0.0)))
         println(network.predict(ArrayVector(1.0, 0.0)))
@@ -35,13 +35,13 @@ class TestNeuralNetwork : TestRenderDelegate() {
         val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
         val graphics: Graphics2D = image.createGraphics()
         graphics.background = Color.WHITE
-        graphics.clearRect(0,0, width, height)
-        repeat(width){ col ->
+        graphics.clearRect(0, 0, width, height)
+        repeat(width) { col ->
             val x = col.toDouble() / (width - 1)
-            repeat(height){ row ->
+            repeat(height) { row ->
                 val y = row.toDouble() / (height - 1)
                 val z = network.predict(ArrayVector(x, y))[0].toFloat()
-                image.setRGB(col, row, Color(z,z,z).rgb)
+                image.setRGB(col, row, Color(z, z, z).rgb)
 
             }
         }
@@ -55,32 +55,32 @@ class TestNeuralNetwork : TestRenderDelegate() {
 
 
     @Test
-    fun testSin(){
-        val network = FeedForwardNeuralNetwork(1,5,5,1, transferFunction = tanh)
+    fun testSin() {
+        val network = FeedForwardNeuralNetwork(1, 5, 5, 1, transferFunction = tanh)
         val inputs = mutableListOf<ArrayVector>()
         val outputs = mutableListOf<ArrayVector>()
         val width = 200
         val max = width
-        (0..max).forEach{
-            val x = 2 * PI * it/ (max - 1.0)
+        (0..max).forEach {
+            val x = 2 * PI * it / (max - 1.0)
             val y = sin(x)
             inputs.add(ArrayVector(x))
             outputs.add(ArrayVector(y))
         }
         network.learningRate = 8.0 / width
-        network.momentum = network.learningRate/2
+        network.momentum = network.learningRate / 2
         network.trainBatch(inputs.toTypedArray(), outputs.toTypedArray(), epochs = 1000, batchSize = 4)
         val height = width
         val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
         val graphics: Graphics2D = image.createGraphics()
         graphics.background = Color.WHITE
-        graphics.clearRect(0,0, width, height)
-        repeat(width){ col ->
+        graphics.clearRect(0, 0, width, height)
+        repeat(width) { col ->
             val x = 2 * PI * col.toDouble() / (width - 1)
-            val y = ((network.predict(ArrayVector(x))[0].toFloat() + 1)/2).coerceIn(-1.0f, 1.0f)
-            val expected = ((sin(x).toFloat()+ 1)/2).coerceIn(-1.0f, 1.0f)
-            val rowY = (y*(height- 1)).toInt()
-            val expectedRow = (expected*(height - 1)).toInt()
+            val y = ((network.predict(ArrayVector(x))[0].toFloat() + 1) / 2).coerceIn(-1.0f, 1.0f)
+            val expected = ((sin(x).toFloat() + 1) / 2).coerceIn(-1.0f, 1.0f)
+            val rowY = (y * (height - 1)).toInt()
+            val expectedRow = (expected * (height - 1)).toInt()
             image.setRGB(col, rowY, Color.BLUE.rgb)
             image.setRGB(col, expectedRow, Color.RED.rgb)
 
@@ -92,7 +92,6 @@ class TestNeuralNetwork : TestRenderDelegate() {
             JOptionPane.showMessageDialog(null, label)
         }
     }
-
 
 
 }

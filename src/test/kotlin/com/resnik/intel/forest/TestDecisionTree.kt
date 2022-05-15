@@ -2,48 +2,49 @@ package com.resnik.intel.forest
 
 import org.junit.Test
 import java.lang.Boolean
+import kotlin.String
 
 class TestDecisionTree {
 
-    fun tennisDataset() : Dataset {
-        val outlook         = Attribute("Outlook",      String::class.java)
-        val sunny           = "Sunny"
-        val overcast        = "Overcast"
-        val rain            = "Rain"
-        val temperature     = Attribute("Temperature",  String::class.java)
-        val hot             = "Hot"
-        val mild            = "Mild"
-        val cool            = "Cool"
-        val humidity        = Attribute("Humidity",     String::class.java)
-        val high            = "High"
-        val normal          = "Normal"
-        val wind            = Attribute("Wind",         String::class.java)
-        val weak            = "Weak"
-        val strong          = "Strong"
-        val tennis          = Attribute("Tennis",       String::class.java)
-        val no              = "No"
-        val yes             = "Yes"
+    fun tennisDataset(): Dataset {
+        val outlook = Attribute("Outlook", String::class.java)
+        val sunny = "Sunny"
+        val overcast = "Overcast"
+        val rain = "Rain"
+        val temperature = Attribute("Temperature", String::class.java)
+        val hot = "Hot"
+        val mild = "Mild"
+        val cool = "Cool"
+        val humidity = Attribute("Humidity", String::class.java)
+        val high = "High"
+        val normal = "Normal"
+        val wind = Attribute("Wind", String::class.java)
+        val weak = "Weak"
+        val strong = "Strong"
+        val tennis = Attribute("Tennis", String::class.java)
+        val no = "No"
+        val yes = "Yes"
         val schema = Schema(outlook, temperature, humidity, wind, tennis)
         val dataset = Dataset(schema, tennis)
-        dataset.add(Entry(schema, sunny,      hot,    high,   weak,       no))
-        dataset.add(Entry(schema, sunny,      hot,    high,   strong,     no))
-        dataset.add(Entry(schema, overcast,   hot,    high,   weak,       yes))
-        dataset.add(Entry(schema, rain,       mild,   high,   weak,       yes))
-        dataset.add(Entry(schema, rain,       cool,   normal, weak,       yes))
-        dataset.add(Entry(schema, rain,       cool,   normal, strong,     no))
-        dataset.add(Entry(schema, overcast,   cool,   normal, strong,     yes))
-        dataset.add(Entry(schema, sunny,      mild,   high,   weak,       no))
-        dataset.add(Entry(schema, sunny,      cool,   normal, weak,       yes))
-        dataset.add(Entry(schema, rain,       mild,   normal, weak,       yes))
-        dataset.add(Entry(schema, sunny,      mild,   normal, strong,     yes))
-        dataset.add(Entry(schema, overcast,   mild,   high,   strong,     yes))
-        dataset.add(Entry(schema, overcast,   hot,    normal, weak,       yes))
-        dataset.add(Entry(schema, rain,       mild,   high,   strong,     no))
+        dataset.add(Entry(schema, sunny, hot, high, weak, no))
+        dataset.add(Entry(schema, sunny, hot, high, strong, no))
+        dataset.add(Entry(schema, overcast, hot, high, weak, yes))
+        dataset.add(Entry(schema, rain, mild, high, weak, yes))
+        dataset.add(Entry(schema, rain, cool, normal, weak, yes))
+        dataset.add(Entry(schema, rain, cool, normal, strong, no))
+        dataset.add(Entry(schema, overcast, cool, normal, strong, yes))
+        dataset.add(Entry(schema, sunny, mild, high, weak, no))
+        dataset.add(Entry(schema, sunny, cool, normal, weak, yes))
+        dataset.add(Entry(schema, rain, mild, normal, weak, yes))
+        dataset.add(Entry(schema, sunny, mild, normal, strong, yes))
+        dataset.add(Entry(schema, overcast, mild, high, strong, yes))
+        dataset.add(Entry(schema, overcast, hot, normal, weak, yes))
+        dataset.add(Entry(schema, rain, mild, high, strong, no))
         return dataset
     }
 
     @Test
-    fun testTennisDataset(){
+    fun testTennisDataset() {
         val dataset = tennisDataset()
         val decisionTree = dataset.buildTree()
         val result = decisionTree.traverse("Sunny", "Mild", "High", "Strong")
@@ -51,7 +52,7 @@ class TestDecisionTree {
     }
 
     @Test
-    fun testDecisionTree(){
+    fun testDecisionTree() {
         val input = Attribute("name", String::class.java)
         val middle = Attribute("age", String::class.java)
         val output = Attribute("isCool", Boolean::class.java)

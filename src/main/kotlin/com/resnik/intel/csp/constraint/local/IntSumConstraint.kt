@@ -1,7 +1,6 @@
 package com.resnik.intel.csp.constraint.local
 
-class IntSumConstraint<VAR>(variables : List<VAR>, maxValue : Int)
-    : LocalSumConstraint<VAR, Int>(variables, maxValue) {
+class IntSumConstraint<VAR>(variables: List<VAR>, maxValue: Int) : LocalSumConstraint<VAR, Int>(variables, maxValue) {
 
     override fun add(one: Int, two: Int): Int = one + two
 

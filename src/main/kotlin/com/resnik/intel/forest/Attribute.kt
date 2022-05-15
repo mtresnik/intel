@@ -1,6 +1,6 @@
 package com.resnik.intel.forest
 
-class Attribute<T>(val name: String, val type: Class<T>){
+class Attribute<T>(val name: String, val type: Class<T>) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -26,7 +26,8 @@ class Attribute<T>(val name: String, val type: Class<T>){
 
     companion object {
 
-        fun <T> fromClass(clazz: Class<T>) : Array<Attribute<*>> = clazz.declaredFields.map { field -> Attribute(field.name, field.type) }.toTypedArray()
+        fun <T> fromClass(clazz: Class<T>): Array<Attribute<*>> =
+            clazz.declaredFields.map { field -> Attribute(field.name, field.type) }.toTypedArray()
 
     }
 

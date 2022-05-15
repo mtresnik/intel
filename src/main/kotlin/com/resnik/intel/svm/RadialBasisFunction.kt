@@ -4,8 +4,9 @@ import com.resnik.math.linear.array.ArrayVector
 import kotlin.math.exp
 import kotlin.math.pow
 
-class RadialBasisFunction(private val gamma : Double = 0.1) : Kernel {
+class RadialBasisFunction(private val gamma: Double = 0.1) : Kernel {
 
-    override fun apply(x1: ArrayVector, x2: ArrayVector): Double = exp(-gamma*(x1.values.indices.sumByDouble { x1[it] - x2[it].pow(2) }))
+    override fun apply(x1: ArrayVector, x2: ArrayVector): Double =
+        exp(-gamma * (x1.values.indices.sumByDouble { x1[it] - x2[it].pow(2) }))
 
 }

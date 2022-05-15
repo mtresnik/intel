@@ -21,7 +21,7 @@ class TestCluster : TestRenderDelegate() {
         val height = width
         val clusterSize = 20
         val numPoints = clusterSize * 2
-        val points = List(numPoints){
+        val points = List(numPoints) {
             ArrayPoint(
                 Math.random() * (width - 1),
                 Math.random() * (height - 1)
@@ -29,7 +29,7 @@ class TestCluster : TestRenderDelegate() {
         }
         val kmeans = KMeans.getBestKMeans(clusterSize, points)
 
-        if (RENDER){
+        if (RENDER) {
             val palette = Array(clusterSize) {
                 Color(
                     Math.random().toFloat(),
@@ -76,8 +76,9 @@ class TestCluster : TestRenderDelegate() {
     }
 
     @Test
-    fun testImageCompression(){
-        val url = URL("https://www.destinationmansfield.com/wp-content/uploads/2018/06/A_Sunday_on_La_Grande_Jatte_Georges_Seurat_1884-600x403.png")
+    fun testImageCompression() {
+        val url =
+            URL("https://www.destinationmansfield.com/wp-content/uploads/2018/06/A_Sunday_on_La_Grande_Jatte_Georges_Seurat_1884-600x403.png")
         val originalImage: BufferedImage = ImageIO.read(url)
         val clusterSize = 16
         val ratio = originalImage.height.toDouble() / originalImage.width.toDouble()
@@ -100,11 +101,12 @@ class TestCluster : TestRenderDelegate() {
         val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
         val graphics: Graphics2D = image.createGraphics()
         graphics.background = Color.WHITE
-        graphics.clearRect(0,0, width, height)
-        repeat(width){ col ->
-            repeat(height){ row ->
+        graphics.clearRect(0, 0, width, height)
+        repeat(width) { col ->
+            repeat(height) { row ->
                 val color = Color(input.getRGB(col, row))
-                val closestCluster = kmeans[ArrayPoint(color.red.toDouble(), color.green.toDouble(), color.blue.toDouble())]
+                val closestCluster =
+                    kmeans[ArrayPoint(color.red.toDouble(), color.green.toDouble(), color.blue.toDouble())]
                 val meanColorPoint = closestCluster.getMean()
                 val red = meanColorPoint[0].toInt().coerceIn(0, 255)
                 val green = meanColorPoint[1].toInt().coerceIn(0, 255)

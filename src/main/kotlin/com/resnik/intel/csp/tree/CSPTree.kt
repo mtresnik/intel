@@ -7,13 +7,14 @@ import java.util.*
 /**
  * Standard, iterative Depth-First-Search CSP
  * */
-class CSPTree<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
-                           private val maxTime : Long = Long.MAX_VALUE,
-                           sortVariables : Boolean = SORT_VARIABLES_DEFAULT,
-                           preprocessors : List<CSPPreprocessor<VAR, DOMAIN>> = mutableListOf())
-    : MultiCSP<VAR, DOMAIN>(domainMap, sortVariables, preprocessors) {
+class CSPTree<VAR, DOMAIN>(
+    domainMap: Map<VAR, List<DOMAIN>>,
+    private val maxTime: Long = Long.MAX_VALUE,
+    sortVariables: Boolean = SORT_VARIABLES_DEFAULT,
+    preprocessors: List<CSPPreprocessor<VAR, DOMAIN>> = mutableListOf()
+) : MultiCSP<VAR, DOMAIN>(domainMap, sortVariables, preprocessors) {
 
-    override fun findAllSolutions() : List<Map<VAR, DOMAIN>> {
+    override fun findAllSolutions(): List<Map<VAR, DOMAIN>> {
         preprocess()
         onStart()
         val cspAgent = constructAgent() ?: return listOf()
@@ -31,7 +32,7 @@ class CSPTree<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
         return ret
     }
 
-    private fun constructAgent() : CSPAgent<VAR, DOMAIN>? {
+    private fun constructAgent(): CSPAgent<VAR, DOMAIN>? {
         val start = System.currentTimeMillis()
         // Construct for first variable in list
         val variables = getVariables()

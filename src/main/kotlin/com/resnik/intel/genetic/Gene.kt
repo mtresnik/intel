@@ -1,6 +1,6 @@
 package com.resnik.intel.genetic
 
-class Gene<T> (val value: T){
+class Gene<T>(val value: T) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

@@ -2,15 +2,15 @@ package com.resnik.intel.similarity
 
 import java.util.*
 
-fun String.lcs(other: String) : String {
-    val numArray = Array(this.length + 1){ IntArray(other.length + 1){0} }
-    for(i in 1 until this.length + 1){
+fun String.lcs(other: String): String {
+    val numArray = Array(this.length + 1) { IntArray(other.length + 1) { 0 } }
+    for (i in 1 until this.length + 1) {
         val c1 = this[i - 1]
-        for(j in 1 until other.length + 1){
+        for (j in 1 until other.length + 1) {
             val c2 = other[j - 1]
-            if(c1 == c2){
+            if (c1 == c2) {
                 numArray[i][j] = numArray[i - 1][j - 1] + 1;
-            }else{
+            } else {
                 numArray[i][j] = numArray[i - 1][j].coerceAtLeast(numArray[i][j - 1])
             }
         }
@@ -42,9 +42,10 @@ fun String.lcs(other: String) : String {
     return retString
 }
 
-fun String.lcsSimilarity(other: String) : Double = this.lcs(other).length.toDouble() / this.length.coerceAtLeast(other.length)
+fun String.lcsSimilarity(other: String): Double =
+    this.lcs(other).length.toDouble() / this.length.coerceAtLeast(other.length)
 
-fun String.jaro(other: String) : Double {
+fun String.jaro(other: String): Double {
     if (this.isEmpty() && other.isEmpty()) return 1.0
     val maxMatchDistance = this.length.coerceAtLeast(other.length) / 2 - 1
     val thisMatchArray = BooleanArray(this.length)
@@ -53,7 +54,7 @@ fun String.jaro(other: String) : Double {
     for (i in this.indices) {
         val start = 0.coerceAtLeast(i - maxMatchDistance)
         val end = (i + maxMatchDistance + 1).coerceAtMost(other.length)
-        (start until end).find { j -> !otherMatchArray[j] && this[i] == other[j] } ?. let {
+        (start until end).find { j -> !otherMatchArray[j] && this[i] == other[j] }?.let {
             thisMatchArray[i] = true
             otherMatchArray[it] = true
             matches++
@@ -72,13 +73,13 @@ fun String.jaro(other: String) : Double {
     return (m / this.length + m / other.length + (m - t) / m) / 3.0
 }
 
-fun String.jaroWinkler(other: String, scalingFactor : Double = 0.1) : Double {
+fun String.jaroWinkler(other: String, scalingFactor: Double = 0.1): Double {
     val sJ = this.jaro(other)
-    if(sJ <= 0.7) return sJ
+    if (sJ <= 0.7) return sJ
     val prefix = (0 until this.length.coerceAtMost(other.length))
-            .count { this[it] == other[it] }
-            .coerceAtMost(4)
-            .toDouble()
+        .count { this[it] == other[it] }
+        .coerceAtMost(4)
+        .toDouble()
     println(prefix)
     return sJ + scalingFactor * prefix * (1.0 - sJ)
 }

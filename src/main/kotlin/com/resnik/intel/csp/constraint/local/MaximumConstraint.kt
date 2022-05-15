@@ -2,8 +2,8 @@ package com.resnik.intel.csp.constraint.local
 
 import com.resnik.intel.csp.constraint.ReusableConstraint
 
-abstract class MaximumConstraint<VAR, DOMAIN>(variables : List<VAR>)
-    : LocalHeuristicConstraint<VAR, DOMAIN>(variables), ReusableConstraint<VAR, DOMAIN> {
+abstract class MaximumConstraint<VAR, DOMAIN>(variables: List<VAR>) : LocalHeuristicConstraint<VAR, DOMAIN>(variables),
+    ReusableConstraint<VAR, DOMAIN> {
 
     private var maxValue = -Double.MAX_VALUE
 
@@ -13,7 +13,7 @@ abstract class MaximumConstraint<VAR, DOMAIN>(variables : List<VAR>)
 
     override fun isSatisfied(assignment: Map<VAR, DOMAIN>): Boolean {
         val tempValue = evaluate(assignment)
-        if(tempValue >= maxValue) {
+        if (tempValue >= maxValue) {
             maxValue = tempValue
             return true
         }

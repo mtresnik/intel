@@ -9,23 +9,24 @@ import java.util.concurrent.Executors
 
 
 /** Higher complexity over the long-term than CSPCoroutine, because of overhead of creating thread pool each time. */
-class CSPInferredAsync<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
-                                    maxTime : Long = Long.MAX_VALUE,
-                                    maxThreads : Int = MAX_THREAD_COUNT,
-                                    sortVariables : Boolean = SORT_VARIABLES_DEFAULT,
-                                    preprocessors : List<CSPPreprocessor<VAR, DOMAIN>> = mutableListOf())
-    : CSPAsyncBase<VAR, DOMAIN>(domainMap, maxTime, maxThreads, sortVariables, preprocessors) {
+class CSPInferredAsync<VAR, DOMAIN>(
+    domainMap: Map<VAR, List<DOMAIN>>,
+    maxTime: Long = Long.MAX_VALUE,
+    maxThreads: Int = MAX_THREAD_COUNT,
+    sortVariables: Boolean = SORT_VARIABLES_DEFAULT,
+    preprocessors: List<CSPPreprocessor<VAR, DOMAIN>> = mutableListOf()
+) : CSPAsyncBase<VAR, DOMAIN>(domainMap, maxTime, maxThreads, sortVariables, preprocessors) {
 
     private val bfsSolutions = Collections.synchronizedList(mutableListOf<Map<VAR, DOMAIN>>())
 
-    override fun findAllSolutions() : List<Map<VAR, DOMAIN>> {
+    override fun findAllSolutions(): List<Map<VAR, DOMAIN>> {
         preprocess()
         onStart()
         // Construct for first variable in list
         val agents = constructAgents()
         val retList = Collections.synchronizedList(mutableListOf<Map<VAR, DOMAIN>>())
         retList.addAll(bfsSolutions)
-        if(agents.isEmpty()) {
+        if (agents.isEmpty()) {
             // Make domain async
             val domainAsync = CSPDomainAsync(domainMap)
             domainAsync.addAllConstraintsFrom(this)
@@ -36,13 +37,14 @@ class CSPInferredAsync<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
         agents.forEach { agent ->
             executor.execute {
                 val solutions = agent.findAllSolutions()
-                synchronized(retList){
+                synchronized(retList) {
                     retList.addAll(solutions)
                 }
             }
         }
         executor.shutdown()
-        while(!executor.isTerminated) {}
+        while (!executor.isTerminated) {
+        }
         onFinish()
         return retList.filter { isReusablyConsistent(it) }
     }
@@ -55,8 +57,8 @@ class CSPInferredAsync<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
         val retList = Collections.synchronizedList(mutableListOf<Map<VAR, DOMAIN>>())
         retList.addAll(bfsSolutions)
         // First solution was found by doing BFS somehow
-        if(retList.isNotEmpty()) return retList.firstOrNull()
-        if(agents.isEmpty()) {
+        if (retList.isNotEmpty()) return retList.firstOrNull()
+        if (agents.isEmpty()) {
             // Make domain async
             val domainAsync = CSPDomainAsync(domainMap)
             domainAsync.addAllConstraintsFrom(this)
@@ -67,13 +69,14 @@ class CSPInferredAsync<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
         agents.forEach { agent ->
             executor.execute {
                 val solution = agent.getFirstSolution()
-                synchronized(retList){
-                    if(retList.isEmpty()) retList.add(solution)
+                synchronized(retList) {
+                    if (retList.isEmpty()) retList.add(solution)
                 }
             }
         }
         executor.shutdown()
-        while(!executor.isTerminated) {}
+        while (!executor.isTerminated) {
+        }
         onFinish()
         return retList.firstOrNull()
     }
@@ -95,17 +98,17 @@ class CSPInferredAsync<VAR, DOMAIN>(domainMap : Map<VAR, List<DOMAIN>>,
         val rootNodes = firstDomain.map { domain -> CSPNode<VAR, DOMAIN>(first, domain, parent = null) }.toMutableList()
         rootNodes.forEach { bfsQueue.add(it) }
         // c = maxDomainSize for now because of max growth rate per iteration
-        var currentBFS : CSPNode<VAR, DOMAIN>
+        var currentBFS: CSPNode<VAR, DOMAIN>
         val maxDomainSize = domainMap.values.map { it.size }.maxOrNull()!!
         val maxQueueSize = (maxThreads - maxDomainSize).coerceAtLeast(firstDomain.size)
-        while(bfsQueue.size <= maxQueueSize && bfsQueue.isNotEmpty()) {
+        while (bfsQueue.size <= maxQueueSize && bfsQueue.isNotEmpty()) {
             currentBFS = bfsQueue.poll()
             // Visit Current
             val currentMap = currentBFS.map
-            if(isLocallyConsistent(currentBFS.variable, currentMap)) {
-                if(currentMap.size == variables.size) {
+            if (isLocallyConsistent(currentBFS.variable, currentMap)) {
+                if (currentMap.size == variables.size) {
                     // Don't add to solution set unless absolutely sure.
-                    if(isConsistent(currentBFS.variable, currentMap)) {
+                    if (isConsistent(currentBFS.variable, currentMap)) {
                         bfsSolutions.add(currentMap)
                     }
                     // Else stop exploring branch.

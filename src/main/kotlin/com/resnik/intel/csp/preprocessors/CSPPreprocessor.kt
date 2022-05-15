@@ -7,6 +7,6 @@ import com.resnik.intel.csp.TimedCSPAlgorithm
 abstract class CSPPreprocessor<VAR, DOMAIN> : TimedCSPAlgorithm() {
 
     @Throws(CSPException.DomainException::class)
-    abstract fun preprocess(csp : CSPBase<VAR, DOMAIN>)
+    abstract fun preprocess(csp: CSPBase<VAR, DOMAIN>)
 
 }

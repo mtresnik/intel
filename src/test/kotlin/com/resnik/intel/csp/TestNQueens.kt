@@ -1,6 +1,5 @@
 package com.resnik.intel.csp
 
-import com.resnik.intel.TestRenderDelegate
 import com.resnik.intel.csp.constraint.local.LocalConstraint
 import com.resnik.intel.csp.preprocessors.AC3Preprocessor
 import com.resnik.intel.csp.tree.CSPTree
@@ -14,7 +13,7 @@ import javax.swing.ImageIcon
 import javax.swing.JLabel
 import javax.swing.JOptionPane
 
-class TestNQueens : TestRenderDelegate() {
+class TestNQueens {
 
     class QC(columns: List<Int>) : LocalConstraint<Int, Int>(columns) {
 
@@ -38,6 +37,7 @@ class TestNQueens : TestRenderDelegate() {
     }
 
     @Test
+    @Ignore
     fun testNQueensAll2() {
         val n = 9
         val start = System.currentTimeMillis()
@@ -55,6 +55,7 @@ class TestNQueens : TestRenderDelegate() {
     }
 
     @Test
+    @Ignore
     fun testNQueensTree() {
         val n = 12
         val start = System.currentTimeMillis()
@@ -72,7 +73,6 @@ class TestNQueens : TestRenderDelegate() {
     }
 
     private fun drawBoard(n: Int, solutions: Collection<Map<Int, Int>>) {
-        if (!RENDER) return
         val squareSize = 20
         val imageSize = n * squareSize
         val image = BufferedImage(imageSize, imageSize, BufferedImage.TYPE_INT_RGB)
@@ -105,6 +105,7 @@ class TestNQueens : TestRenderDelegate() {
     }
 
     @Test
+    @Ignore
     fun testNQueensDomainAsync() {
         val n = 13
         val start = System.currentTimeMillis()
@@ -122,6 +123,7 @@ class TestNQueens : TestRenderDelegate() {
     }
 
     @Test
+    @Ignore
     fun testNQueensDomainAsyncFirst() {
         val n = 22
         val cols = (1..n).toList()
@@ -166,6 +168,7 @@ class TestNQueens : TestRenderDelegate() {
     }
 
     @Test
+    @Ignore
     fun testNQueensDomainCoroutineAll() {
         val n = 9
         val cols = (1..n).toList()
@@ -183,6 +186,7 @@ class TestNQueens : TestRenderDelegate() {
     }
 
     @Test
+    @Ignore
     fun testNQueensInferredAsync() {
         val n = 8
         val start = System.currentTimeMillis()

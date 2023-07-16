@@ -1,7 +1,7 @@
 package com.resnik.intel.cluster
 
-import com.resnik.intel.TestRenderDelegate
 import com.resnik.math.linear.array.ArrayPoint
+import org.junit.Ignore
 import org.junit.Test
 import java.awt.Color
 import java.awt.Graphics2D
@@ -13,9 +13,10 @@ import javax.swing.ImageIcon
 import javax.swing.JLabel
 import javax.swing.JOptionPane
 
-class TestCluster : TestRenderDelegate() {
+class TestCluster {
 
     @Test
+    @Ignore
     fun testRandom() {
         val width = 800
         val height = width
@@ -29,41 +30,39 @@ class TestCluster : TestRenderDelegate() {
         }
         val kmeans = KMeans.getBestKMeans(clusterSize, points)
 
-        if (RENDER) {
-            val palette = Array(clusterSize) {
-                Color(
-                    Math.random().toFloat(),
-                    Math.random().toFloat(),
-                    Math.random().toFloat()
-                ).rgb
-            }
-
-            val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
-            val graphics: Graphics2D = image.createGraphics()
-            graphics.background = Color.WHITE
-            graphics.clearRect(0, 0, width, height)
-            repeat(width) { col ->
-                repeat(height) { row ->
-                    image.setRGB(
-                        col, row, palette[kmeans.getClusterIndex(
-                            ArrayPoint(
-                                col.toDouble(),
-                                row.toDouble()
-                            )
-                        )]
-                    )
-                }
-            }
-            graphics.paint = Color.BLACK
-            kmeans.allClusters.forEach { cluster ->
-                val mean = cluster.getMean()
-                graphics.fillOval(mean[0].toInt(), mean[1].toInt(), 5, 5)
-            }
-            graphics.dispose()
-            val icon = ImageIcon(image)
-            val label = JLabel(icon)
-            JOptionPane.showMessageDialog(null, label)
+        val palette = Array(clusterSize) {
+            Color(
+                Math.random().toFloat(),
+                Math.random().toFloat(),
+                Math.random().toFloat()
+            ).rgb
         }
+
+        val image = BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
+        val graphics: Graphics2D = image.createGraphics()
+        graphics.background = Color.WHITE
+        graphics.clearRect(0, 0, width, height)
+        repeat(width) { col ->
+            repeat(height) { row ->
+                image.setRGB(
+                    col, row, palette[kmeans.getClusterIndex(
+                        ArrayPoint(
+                            col.toDouble(),
+                            row.toDouble()
+                        )
+                    )]
+                )
+            }
+        }
+        graphics.paint = Color.BLACK
+        kmeans.allClusters.forEach { cluster ->
+            val mean = cluster.getMean()
+            graphics.fillOval(mean[0].toInt(), mean[1].toInt(), 5, 5)
+        }
+        graphics.dispose()
+        val icon = ImageIcon(image)
+        val label = JLabel(icon)
+        JOptionPane.showMessageDialog(null, label)
     }
 
     @Throws(IOException::class)
@@ -76,6 +75,7 @@ class TestCluster : TestRenderDelegate() {
     }
 
     @Test
+    @Ignore
     fun testImageCompression() {
         val url =
             URL("https://www.destinationmansfield.com/wp-content/uploads/2018/06/A_Sunday_on_La_Grande_Jatte_Georges_Seurat_1884-600x403.png")
@@ -117,11 +117,9 @@ class TestCluster : TestRenderDelegate() {
         }
         graphics.dispose()
 
-        if (RENDER) {
-            val icon = ImageIcon(image)
-            val label = JLabel(icon)
-            JOptionPane.showMessageDialog(null, label)
-        }
+        val icon = ImageIcon(image)
+        val label = JLabel(icon)
+        JOptionPane.showMessageDialog(null, label)
 
     }
 

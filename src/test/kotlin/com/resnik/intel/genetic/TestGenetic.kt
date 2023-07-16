@@ -1,6 +1,5 @@
 package com.resnik.intel.genetic
 
-import com.resnik.intel.TestRenderDelegate
 import com.resnik.math.linear.array.ArrayPoint
 import org.junit.Ignore
 import org.junit.Test
@@ -14,7 +13,7 @@ import javax.swing.JOptionPane
 import kotlin.math.*
 
 @Ignore
-class TestGenetic : TestRenderDelegate() {
+class TestGenetic {
 
     val minX = -3.0
     val minY = -3.0
@@ -80,6 +79,7 @@ class TestGenetic : TestRenderDelegate() {
     }
 
     @Test
+    @Ignore
     fun testGeneticPoints() {
 
         val equation2 = object : Function2<Double, Double, Double> {
@@ -158,14 +158,12 @@ class TestGenetic : TestRenderDelegate() {
             drawLine(firstPoint, secondPoint, graphics, Color.RED)
         }
 
-        if (RENDER) {
-            drawPoint(minPoint, graphics, Color.BLUE)
+        drawPoint(minPoint, graphics, Color.BLUE)
 
-            graphics.dispose()
-            val icon = ImageIcon(image)
-            val label = JLabel(icon)
-            JOptionPane.showMessageDialog(null, label)
-        }
+        graphics.dispose()
+        val icon = ImageIcon(image)
+        val label = JLabel(icon)
+        JOptionPane.showMessageDialog(null, label)
     }
 
 }

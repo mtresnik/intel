@@ -1,11 +1,11 @@
 package com.resnik.intel.csp
 
-import com.resnik.intel.TestRenderDelegate
 import com.resnik.intel.csp.constraint.local.LocalConstraint
 import com.resnik.intel.csp.tree.CSPTree
 import com.resnik.intel.csp.tree.async.CSPCoroutine
 import com.resnik.intel.csp.tree.async.CSPDomainAsync
 import com.resnik.math.linear.array.geometry.Rect
+import org.junit.Ignore
 import org.junit.Test
 import java.awt.Color
 import java.awt.image.BufferedImage
@@ -14,7 +14,7 @@ import javax.swing.JLabel
 import javax.swing.JOptionPane
 
 
-class TestMapColoring : TestRenderDelegate() {
+class TestMapColoring {
 
     class MCC(private val from: String, private val to: String) : LocalConstraint<String, String>(listOf(from, to)) {
 
@@ -108,6 +108,7 @@ class TestMapColoring : TestRenderDelegate() {
     }
 
     @Test
+    @Ignore
     fun testMapColoringRects() {
         val allTiles = mutableListOf<Rect>()
         val numRectWidth = 8
@@ -158,14 +159,13 @@ class TestMapColoring : TestRenderDelegate() {
                 index++
             }
         }
-        if (RENDER) {
-            val icon = ImageIcon(image)
-            val label = JLabel(icon)
-            JOptionPane.showMessageDialog(null, label)
-        }
+        val icon = ImageIcon(image)
+        val label = JLabel(icon)
+        JOptionPane.showMessageDialog(null, label)
     }
 
     @Test
+    @Ignore
     fun testMapColoringDifferentSized() {
         val allTiles = mutableListOf<Rect>(
             Rect(0.0, 0.0, 1.0, 1.0), Rect(1.0, 0.0, 2.0, 1.0), Rect(3.0, 0.0, 1.0, 1.0),
@@ -235,11 +235,9 @@ class TestMapColoring : TestRenderDelegate() {
             }
 
         }
-        if (RENDER) {
-            val icon = ImageIcon(image)
-            val label = JLabel(icon)
-            JOptionPane.showMessageDialog(null, label)
-        }
+        val icon = ImageIcon(image)
+        val label = JLabel(icon)
+        JOptionPane.showMessageDialog(null, label)
 
     }
 

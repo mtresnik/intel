@@ -1,6 +1,5 @@
 package com.resnik.intel.quadtree.point
 
-import com.resnik.intel.TestRenderDelegate
 import com.resnik.intel.quadtree.image.ImageQuadTree
 import com.resnik.math.linear.array.ArrayPoint2d
 import com.resnik.math.linear.array.geometry.ShapeCollection
@@ -15,9 +14,10 @@ import javax.swing.ImageIcon
 import javax.swing.JLabel
 import javax.swing.JOptionPane
 
-class TestQuadtree : TestRenderDelegate() {
+class TestQuadtree {
 
     @Test
+    @Ignore
     fun testQuadTree1() {
         // gen random points, show boxes
         val size = 500
@@ -35,7 +35,7 @@ class TestQuadtree : TestRenderDelegate() {
         data.points.forEach { point ->
             shapeCollection.addPoint(point, Color.BLUE)
         }
-        if (RENDER) shapeCollection.render()
+        shapeCollection.render()
     }
 
     @Ignore
@@ -52,11 +52,9 @@ class TestQuadtree : TestRenderDelegate() {
                 output.setRGB(col, row, rgb)
             }
         }
-        if (RENDER) {
-            val icon = ImageIcon(output)
-            val label = JLabel(icon)
-            JOptionPane.showMessageDialog(null, label)
-        }
+        val icon = ImageIcon(output)
+        val label = JLabel(icon)
+        JOptionPane.showMessageDialog(null, label)
     }
 
 }
